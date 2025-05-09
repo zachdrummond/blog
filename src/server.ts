@@ -29,6 +29,7 @@ let posts = [{
 }];
 
 // GraphQL Resolvers = A collection of functions that fetch the data for the schema
+// parent = Result of previous resolver execution level
 const resolvers = {
   Query: {
     info: () => `This is the API of my blog`,
