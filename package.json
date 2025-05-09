@@ -3,8 +3,9 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
+  "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node dist/server.js"
   },
   "repository": {
     "type": "git",
@@ -13,9 +14,12 @@
   "keywords": [],
   "author": "Zach Drummond (https://zachdrummond.com/)",
   "license": "ISC",
-  "type": "commonjs",
   "bugs": {
     "url": "https://github.com/zachdrummond/blog/issues"
   },
-  "homepage": "https://github.com/zachdrummond/blog#readme"
+  "homepage": "https://github.com/zachdrummond/blog#readme",
+  "dependencies": {
+    "@apollo/server": "^4.12.0",
+    "graphql": "^16.11.0"
+  }
 }
