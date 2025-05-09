@@ -1,0 +1,21 @@
+{
+  "name": "blog",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zachdrummond/blog.git"
+  },
+  "keywords": [],
+  "author": "Zach Drummond (https://zachdrummond.com/)",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/zachdrummond/blog/issues"
+  },
+  "homepage": "https://github.com/zachdrummond/blog#readme"
+}
