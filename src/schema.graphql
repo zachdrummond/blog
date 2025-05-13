@@ -1,0 +1,19 @@
+type Query {
+    feed: [Post!]!
+    info: String!
+}
+
+type Mutation {
+    addPost(title: String!, content: String!, published: Boolean!): Post!
+    deletePost(id: ID, title: String): Post!
+    updatePost(id: ID!, title: String, content: String, published: Boolean): Post!
+}
+
+type Post {
+  id: ID!
+  content: String!
+  createdAt: String!
+  published: Boolean!
+  title: String!
+  updatedAt: String!
+}

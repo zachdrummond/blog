@@ -1,22 +1,7 @@
 import { ApolloServer } from "@apollo/server";
 import { startStandaloneServer } from "@apollo/server/standalone";
-
-// GraphQL Schema = A collection of type definitions
-const typeDefs: string = `#graphql
-type Query {
-    feed: [Post!]!
-    info: String!
-}
-
-type Post {
-  id: ID!
-  content: String!
-  createdAt: String!
-  published: Boolean!
-  title: String!
-  updatedAt: String!
-}
-`;
+import fs from "fs";
+import path from "path";
 
 // Data
 let posts = [{
@@ -46,7 +31,7 @@ const resolvers = {
 };
 
 const server = new ApolloServer({
-  typeDefs,
+  typeDefs: fs.readFileSync(path.join(__dirname, "schema.graphql"), "utf-8"),
   resolvers,
 });
 
