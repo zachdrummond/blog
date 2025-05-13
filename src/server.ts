@@ -2,7 +2,7 @@ import { ApolloServer } from "@apollo/server";
 import { startStandaloneServer } from "@apollo/server/standalone";
 import fs from "fs";
 import { dirname, join } from "path";
-import { fileURLToPath } from 'url';
+import { fileURLToPath } from "url";
 
 // Data
 let post_list = [
@@ -79,7 +79,13 @@ const server = new ApolloServer({
 });
 
 // 1. Creates an Express app 2. Installs ApolloServer as middleware 3. Preps app to handle incoming requests
-const { url } = await startStandaloneServer(server, {
-  listen: { port: 4000 },
+const startServer = async () => {
+  const { url } = await startStandaloneServer(server, {
+    listen: { port: 4000 },
+  });
+  console.log(`🚀  Server ready at ${url}`);
+};
+
+startServer().catch((err) => {
+  console.error("Error starting server:", err);
 });
-console.log(`🚀  Server ready at ${url}`);
