@@ -15,5 +15,5 @@ type Post {
   createdAt: String!
   published: Boolean!
   title: String!
-  updatedAt: String!
+  updatedAt: String
 }
