@@ -4,8 +4,8 @@ type Query {
 }
 
 type Mutation {
-    addPost(title: String!, content: String!, published: Boolean!): Post!
-    deletePost(id: ID, title: String): Boolean!
+    addPost(title: String!, content: String!, published: Boolean): Post!
+    deletePost(id: ID, title: String): Post!
     updatePost(id: ID!, title: String, content: String, published: Boolean): Post!
 }
 

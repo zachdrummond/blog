@@ -32,40 +32,45 @@ const resolvers = {
     feed: () => post_list,
   },
   Mutation: {
-    addPost: (parent, args) => {
-      let count = post_list.length;
+    addPost: (parent, { title, content, published }) => {
+      if (!title || !content) {
+        throw new Error("Title and content are required");
+      }
       let current_date = new Date().toLocaleString();
-      const post = {
-        id: `post-${count++}`,
-        content: args.content,
+      const newPost = {
+        id: `post-${post_list.length + 1}`,
         createdAt: current_date,
-        title: args.title,
-        published: args.published,
         updatedAt: current_date,
+        title,
+        content,
+        published: published || false,
       };
-
-      post_list.push(post);
+      post_list.push(newPost);
+      return newPost;
+    },
+    deletePost: (parent, { id, title }) => {
+      if (!id && !title) {
+        throw new Error("Either ID or title must be provided");
+      }
+      const postIndex = post_list.findIndex(
+        (post) => post.id === id || post.title === title
+      );
+      if (postIndex === -1) {
+        throw new Error(`Post with ID ${id} or title ${title} not found`);
+      }
+      post_list.splice(postIndex, 1);
+      return post_list[postIndex];
+    },
+    updatePost: (parent, { id, title, content, published }) => {
+      const post = post_list.find((post) => post.id === id);
+      if (!post) {
+        throw new Error(`Post with ID ${id} not found`);
+      }
+      post.updatedAt = new Date().toLocaleString();
+      if (title) post.title = title;
+      if (content) post.content = content;
+      if (published) post.published = published;
       return post;
-    },
-    deletePost: (parent, args): boolean => {
-      for (let i = 0; i < post_list.length; i++) {
-        if (post_list[i].id === args.id || post_list[i].title === args.title) {
-          post_list.splice(i, 1);
-          return true;
-        }
-      }
-      return false;
-    },
-    updatePost: (parent, args) => {
-      for (let i = 0; i < post_list.length; i++) {
-        if (post_list[i].id === args.id) {
-          if (args.title) post_list[i].title = args.title;
-          if (args.content) post_list[i].content = args.content;
-          if (args.published) post_list[i].published = args.published;
-          post_list[i].updatedAt = new Date().toLocaleString();
-        }
-        return post_list[i];
-      }
     },
   },
 };
