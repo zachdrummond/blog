@@ -1,6 +1,6 @@
 type Query {
-    feed: [Post!]!
-    info: String!
+    getAllPosts: [Post!]!
+    getPosts(ids: [ID], titles: [String]): [Post!]!
 }
 
 type Mutation {
