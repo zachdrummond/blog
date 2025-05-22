@@ -22,6 +22,14 @@ let post_list = [
     content: "Test Content",
     published: false,
   },
+  {
+    id: "post-3",
+    createdAt: new Date().toLocaleString(),
+    updatedAt: new Date().toLocaleString(),
+    title: "Test Title",
+    content: "Test Content",
+    published: false,
+  },
 ];
 
 // GraphQL Resolvers = A collection of functions that fetch the data for the schema

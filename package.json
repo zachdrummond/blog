@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "compile": "tsc && copyfiles -u 1 src/*.graphql dist/",
-    "dev": "node --watch -r ts-node/register src/server.ts",
+    "dev": "tsx watch src/server.ts",
     "start": "npm run compile && node ./dist/server.js"
   },
   "repository": {
@@ -25,9 +25,9 @@
     "graphql": "^16.11.0"
   },
   "devDependencies": {
-    "@types/node": "^22.15.17",
+    "@types/node": "^22.15.21",
     "copyfiles": "^2.4.1",
-    "ts-node": "^10.9.2",
+    "tsx": "^4.19.4",
     "typescript": "^5.8.3"
   }
 }
