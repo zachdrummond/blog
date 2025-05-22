@@ -9,6 +9,11 @@
     "dev": "tsx watch src/server.ts",
     "start": "npm run compile && node ./dist/server.js"
   },
+  "prisma": {
+    "generate": "prisma generate",
+    "migrate": "prisma migrate dev",
+    "seed": "tsx prisma/seed.ts"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/zachdrummond/blog.git"
@@ -22,11 +27,13 @@
   "homepage": "https://github.com/zachdrummond/blog#readme",
   "dependencies": {
     "@apollo/server": "^4.12.0",
+    "@prisma/client": "^6.8.2",
     "graphql": "^16.11.0"
   },
   "devDependencies": {
     "@types/node": "^22.15.21",
     "copyfiles": "^2.4.1",
+    "prisma": "^6.8.2",
     "tsx": "^4.19.4",
     "typescript": "^5.8.3"
   }

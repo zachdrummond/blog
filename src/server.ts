@@ -7,7 +7,7 @@ import { fileURLToPath } from "url";
 // Data
 let post_list = [
   {
-    id: "post-1",
+    id: 1,
     createdAt: new Date().toLocaleString(),
     updatedAt: new Date().toLocaleString(),
     title: "GraphQL 101",
@@ -15,15 +15,7 @@ let post_list = [
     published: true,
   },
   {
-    id: "post-2",
-    createdAt: new Date().toLocaleString(),
-    updatedAt: new Date().toLocaleString(),
-    title: "Test Title",
-    content: "Test Content",
-    published: false,
-  },
-  {
-    id: "post-3",
+    id: 2,
     createdAt: new Date().toLocaleString(),
     updatedAt: new Date().toLocaleString(),
     title: "Test Title",
@@ -66,7 +58,7 @@ const resolvers = {
 
       let current_date = new Date().toLocaleString();
       const newPost = {
-        id: `post-${post_list.length + 1}`,
+        id: post_list.length + 1 ,
         createdAt: current_date,
         updatedAt: current_date,
         title,
