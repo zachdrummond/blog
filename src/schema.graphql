@@ -1,16 +1,17 @@
 type Query {
     getAllPosts: [Post!]!
-    getPosts(ids: [ID], titles: [String]): [Post!]!
+    getPosts(ids: [ID], titles: [String!], categories: [String!]): [Post!]!
 }
 
 type Mutation {
-    addPost(title: String!, content: String!, published: Boolean): Post!
+    addPost(title: String!, content: String!, categories: [String!]!, published: Boolean): Post!
     deletePost(id: ID, title: String): Post!
-    updatePost(id: ID!, title: String, content: String, published: Boolean): Post!
+    updatePost(id: ID!, title: String, content: String, published: Boolean, categories: [String!]): Post!
 }
 
 type Post {
   id: ID!
+  categories: [String!]!
   content: String!
   createdAt: String!
   published: Boolean!
