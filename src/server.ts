@@ -12,6 +12,7 @@ let post_list = [
     updatedAt: new Date().toLocaleString(),
     title: "GraphQL 101",
     content: "Introduction to GraphQL",
+    categories: ["graphql", "api"],
     published: true,
   },
   {
@@ -20,6 +21,7 @@ let post_list = [
     updatedAt: new Date().toLocaleString(),
     title: "Test Title",
     content: "Test Content",
+    categories: ["test", "api"],
     published: false,
   },
 ];
@@ -32,19 +34,29 @@ const resolvers = {
       if (post_list.length === 0) throw new Error("No posts found.");
       return post_list;
     },
-    getPosts: (parent, { ids, titles }) => {
+    getPosts: (parent, { ids, titles, categories }) => {
       if (post_list.length === 0) throw new Error("No posts found.");
 
-      if((!ids && !titles) || ids?.length === 0 || titles?.length === 0) {
-        console.log("IDs:", ids, "Titles:", titles);
-        throw new Error("Either ID or title must be provided.");
+      if (
+        (!ids && !titles && !categories) ||
+        ids?.length === 0 ||
+        titles?.length === 0 ||
+        categories?.length === 0
+      ) {
+        console.log("IDs:", ids, "Titles:", titles, "Categories:", categories);
+        throw new Error("Either ID, title, or category must be provided.");
       }
 
-      const input = [...ids ? ids : [], ...titles ? titles : []];
+      const input = [...(ids ? ids : []), ...(titles ? titles : []), ...(categories ? categories : [])];
       const new_post_list = [];
       for (let i = 0; i < post_list.length; i++) {
         const post = post_list[i];
-        if (input.includes(post.id) || input.includes(post.title) && !new_post_list.includes(post)) {
+        if (
+          (input.includes(post.id) ||
+          input.includes(post.title) ||
+          input.includes(post.categories)) &&
+          !new_post_list.includes(post)
+        ) {
           new_post_list.push(post);
         }
       }
@@ -52,17 +64,18 @@ const resolvers = {
     },
   },
   Mutation: {
-    addPost: (parent, { title, content, published }) => {
-      if (!title || !content)
-        throw new Error("Title and content are required.");
+    addPost: (parent, { title, content, categories, published }) => {
+      if (!title || !content || !categories)
+        throw new Error("Title, content, and categories are required.");
 
       let current_date = new Date().toLocaleString();
       const newPost = {
-        id: post_list.length + 1 ,
+        id: post_list.length + 1,
         createdAt: current_date,
         updatedAt: current_date,
         title,
         content,
+        categories: categories ? categories : [],
         published: published || false,
       };
 
@@ -84,10 +97,10 @@ const resolvers = {
       post_list.splice(postIndex, 1);
       return deletedPost;
     },
-    updatePost: (parent, { id, title, content, published }) => {
+    updatePost: (parent, { id, title, content, categories, published }) => {
       if (post_list.length === 0) throw new Error("No posts found.");
       if (!id) throw new Error("ID is required.");
-      if (!title && !content && published === undefined)
+      if (!title && !content && categories.length === 0 && published === undefined)
         throw new Error("At least one field must be provided for update.");
 
       const post = post_list.find((post) => post.id === id);
@@ -96,6 +109,7 @@ const resolvers = {
       post.updatedAt = new Date().toLocaleString();
       if (title) post.title = title;
       if (content) post.content = content;
+      if (categories.length > 0) post.categories = categories;
       if (published) post.published = published;
       return post;
     },
