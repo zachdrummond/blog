@@ -10,11 +10,13 @@ const seedDatabase = async () => {
       {
         title: "GraphQL 101",
         content: "Introduction to GraphQL",
+        categories: ["graphql", "api"],
         published: true,
       },
       {
         title: "Test Title",
         content: "Test Content",
+        categories: ["test", "api"],
         published: false,
       },
     ],

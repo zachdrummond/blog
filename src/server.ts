@@ -1,8 +1,9 @@
-import { ApolloServer } from "@apollo/server";
-import { startStandaloneServer } from "@apollo/server/standalone";
 import fs from "fs";
 import { dirname, join } from "path";
 import { fileURLToPath } from "url";
+import { ApolloServer } from "@apollo/server";
+import { startStandaloneServer } from "@apollo/server/standalone";
+import { PrismaClient } from "@prisma/client";
 
 // Data
 let post_list = [
@@ -118,6 +119,7 @@ const resolvers = {
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
+const prisma = new PrismaClient();
 
 const server = new ApolloServer({
   typeDefs: fs.readFileSync(join(__dirname, "schema.graphql"), "utf-8"),
@@ -128,6 +130,9 @@ const server = new ApolloServer({
 const startServer = async () => {
   const { url } = await startStandaloneServer(server, {
     listen: { port: 4000 },
+    context: async ({ req, res }) => {
+      return { prisma };
+    }
   });
   console.log(`🚀  Server ready at ${url}`);
 };
