@@ -31,12 +31,10 @@ let post_list = [
 // parent = Result of previous resolver execution level
 const resolvers = {
   Query: {
-    getAllPosts: () => {
-      if (post_list.length === 0) throw new Error("No posts found.");
-      return post_list;
+    getAllPosts: (parent, args, context) => {
+      return context.prisma.post.findMany();
     },
-    getPosts: (parent, { ids, titles, categories }) => {
-      if (post_list.length === 0) throw new Error("No posts found.");
+    getPosts: (parent, { ids, titles, categories }, context) => {
 
       if (
         (!ids && !titles && !categories) ||
@@ -44,43 +42,40 @@ const resolvers = {
         titles?.length === 0 ||
         categories?.length === 0
       ) {
-        console.log("IDs:", ids, "Titles:", titles, "Categories:", categories);
         throw new Error("Either ID, title, or category must be provided.");
       }
 
-      const input = [...(ids ? ids : []), ...(titles ? titles : []), ...(categories ? categories : [])];
-      const new_post_list = [];
-      for (let i = 0; i < post_list.length; i++) {
-        const post = post_list[i];
-        if (
-          (input.includes(post.id) ||
-          input.includes(post.title) ||
-          input.includes(post.categories)) &&
-          !new_post_list.includes(post)
-        ) {
-          new_post_list.push(post);
-        }
-      }
+      const new_post_list = context.prisma.post.findMany({
+        where: {
+          OR: [
+            { id: { in: ids ? ids : [] } },
+            { title: { in: titles ? titles : [] } },
+            { categories: { hasSome: categories ? categories : [] } },
+          ],
+        },
+      });
+
       return new_post_list;
     },
   },
   Mutation: {
-    addPost: (parent, { title, content, categories, published }) => {
+    addPost: (parent, { title, content, categories, published }, context) => {
       if (!title || !content || !categories)
         throw new Error("Title, content, and categories are required.");
 
       let current_date = new Date().toLocaleString();
-      const newPost = {
-        id: post_list.length + 1,
-        createdAt: current_date,
-        updatedAt: current_date,
-        title,
-        content,
-        categories: categories ? categories : [],
-        published: published || false,
-      };
+      const newPost = context.prisma.post.create({
+        data: {
+          id: 10,
+          createdAt: current_date,
+          updatedAt: current_date,
+          title,
+          content,
+          categories: categories ? categories : [],
+          published: published || false,
+        },
+      });
 
-      post_list.push(newPost);
       return newPost;
     },
     deletePost: (parent, { id, title }) => {
@@ -101,7 +96,12 @@ const resolvers = {
     updatePost: (parent, { id, title, content, categories, published }) => {
       if (post_list.length === 0) throw new Error("No posts found.");
       if (!id) throw new Error("ID is required.");
-      if (!title && !content && categories.length === 0 && published === undefined)
+      if (
+        !title &&
+        !content &&
+        categories.length === 0 &&
+        published === undefined
+      )
         throw new Error("At least one field must be provided for update.");
 
       const post = post_list.find((post) => post.id === id);
@@ -119,7 +119,10 @@ const resolvers = {
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
-const prisma = new PrismaClient();
+// Exposes CRUD API for data models
+const prisma = new PrismaClient({
+  errorFormat: 'pretty',
+});
 
 const server = new ApolloServer({
   typeDefs: fs.readFileSync(join(__dirname, "schema.graphql"), "utf-8"),
@@ -132,7 +135,7 @@ const startServer = async () => {
     listen: { port: 4000 },
     context: async ({ req, res }) => {
       return { prisma };
-    }
+    },
   });
   console.log(`🚀  Server ready at ${url}`);
 };

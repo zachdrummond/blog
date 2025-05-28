@@ -21,9 +21,6 @@ const seedDatabase = async () => {
       },
     ],
   });
-
-  const allPosts = await prisma.post.findMany();
-  console.log(allPosts);
 };
 
 seedDatabase()
@@ -32,5 +29,5 @@ seedDatabase()
     throw e;
   })
   .finally(async () => {
-    await prisma.$disconnect;
+    await prisma.$disconnect();
   });
