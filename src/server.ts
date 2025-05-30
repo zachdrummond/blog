@@ -9,10 +9,10 @@ import { PrismaClient } from "@prisma/client";
 // parent = Result of previous resolver execution level
 const resolvers = {
   Query: {
-    getAllPosts: (parent, args, context) => {
-      return context.prisma.post.findMany();
+    getAllPosts: (parent, args, { prisma }) => {
+      return prisma.post.findMany();
     },
-    getPosts: (parent, { ids, titles, categories }, context) => {
+    getPosts: (parent, { ids, titles, categories }, { prisma }) => {
       if (
         (!ids && !titles && !categories) ||
         ids?.length === 0 ||
@@ -25,7 +25,7 @@ const resolvers = {
       // Convert string IDs to integers
       const parsedIds = ids ? ids.map((id) => parseInt(id, 10)) : [];
 
-      const new_post_list = context.prisma.post.findMany({
+      const new_post_list = prisma.post.findMany({
         where: {
           OR: [
             { id: { in: parsedIds } },
@@ -71,26 +71,35 @@ const resolvers = {
           throw new Error(`Error deleting post: ${error.message}`);
         });
     },
-    updatePost: (parent, { id, title, content, categories, published }) => {
-      if (post_list.length === 0) throw new Error("No posts found.");
+    updatePost: (
+      parent,
+      { id, title, content, categories, published },
+      { prisma }
+    ) => {
       if (!id) throw new Error("ID is required.");
       if (
-        !title &&
-        !content &&
-        categories.length === 0 &&
+        title === undefined &&
+        content === undefined &&
+        (categories === undefined || categories?.length === 0) &&
         published === undefined
       )
         throw new Error("At least one field must be provided for update.");
 
-      const post = post_list.find((post) => post.id === id);
-      if (!post) throw new Error(`Post with ID ${id} not found.`);
-
-      post.updatedAt = new Date().toLocaleString();
-      if (title) post.title = title;
-      if (content) post.content = content;
-      if (categories.length > 0) post.categories = categories;
-      if (published) post.published = published;
-      return post;
+      return prisma.post
+        .update({
+          where: {
+            id: parseInt(id, 10),
+          },
+          data: {
+            title: title ? title : undefined,
+            content: content ? content : undefined,
+            categories: categories?.length > 0 ? categories : undefined,
+            published: published !== undefined ? published : undefined,
+          },
+        })
+        .catch((error) => {
+          throw new Error(`Error updating post: ${error.message}`);
+        });
     },
   },
 };
