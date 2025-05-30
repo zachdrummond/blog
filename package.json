@@ -7,6 +7,7 @@
   "scripts": {
     "compile": "tsc && copyfiles -u 1 src/*.graphql dist/",
     "dev": "tsx watch src/server.ts",
+    "docker": "docker-compose up -d",
     "start": "npm run compile && node ./dist/server.js"
   },
   "prisma": {

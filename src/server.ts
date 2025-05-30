@@ -5,28 +5,6 @@ import { ApolloServer } from "@apollo/server";
 import { startStandaloneServer } from "@apollo/server/standalone";
 import { PrismaClient } from "@prisma/client";
 
-// Data
-let post_list = [
-  {
-    id: 1,
-    createdAt: new Date().toLocaleString(),
-    updatedAt: new Date().toLocaleString(),
-    title: "GraphQL 101",
-    content: "Introduction to GraphQL",
-    categories: ["graphql", "api"],
-    published: true,
-  },
-  {
-    id: 2,
-    createdAt: new Date().toLocaleString(),
-    updatedAt: new Date().toLocaleString(),
-    title: "Test Title",
-    content: "Test Content",
-    categories: ["test", "api"],
-    published: false,
-  },
-];
-
 // GraphQL Resolvers = A collection of functions that fetch the data for the schema
 // parent = Result of previous resolver execution level
 const resolvers = {
@@ -35,7 +13,6 @@ const resolvers = {
       return context.prisma.post.findMany();
     },
     getPosts: (parent, { ids, titles, categories }, context) => {
-
       if (
         (!ids && !titles && !categories) ||
         ids?.length === 0 ||
@@ -45,10 +22,13 @@ const resolvers = {
         throw new Error("Either ID, title, or category must be provided.");
       }
 
+      // Convert string IDs to integers
+      const parsedIds = ids ? ids.map((id) => parseInt(id, 10)) : [];
+
       const new_post_list = context.prisma.post.findMany({
         where: {
           OR: [
-            { id: { in: ids ? ids : [] } },
+            { id: { in: parsedIds } },
             { title: { in: titles ? titles : [] } },
             { categories: { hasSome: categories ? categories : [] } },
           ],
@@ -63,10 +43,9 @@ const resolvers = {
       if (!title || !content || !categories)
         throw new Error("Title, content, and categories are required.");
 
-      let current_date = new Date().toLocaleString();
+      let current_date = new Date();
       const newPost = context.prisma.post.create({
         data: {
-          id: 10,
           createdAt: current_date,
           updatedAt: current_date,
           title,
@@ -78,20 +57,19 @@ const resolvers = {
 
       return newPost;
     },
-    deletePost: (parent, { id, title }) => {
-      if (post_list.length === 0) throw new Error("No posts found.");
+    deletePost: (parent, { id, title }, { prisma }) => {
       if (!id && !title)
         throw new Error("Either ID or title must be provided.");
 
-      const postIndex = post_list.findIndex(
-        (post) => post.id === id || post.title === title
-      );
-      if (postIndex === -1)
-        throw new Error(`Post with ID ${id} or title ${title} not found`);
-
-      const deletedPost = post_list[postIndex];
-      post_list.splice(postIndex, 1);
-      return deletedPost;
+      return prisma.post
+        .delete({
+          where: {
+            id: id ? parseInt(id, 10) : undefined,
+          },
+        })
+        .catch((error) => {
+          throw new Error(`Error deleting post: ${error.message}`);
+        });
     },
     updatePost: (parent, { id, title, content, categories, published }) => {
       if (post_list.length === 0) throw new Error("No posts found.");
@@ -121,7 +99,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 // Exposes CRUD API for data models
 const prisma = new PrismaClient({
-  errorFormat: 'pretty',
+  errorFormat: "minimal",
 });
 
 const server = new ApolloServer({
