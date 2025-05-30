@@ -11,10 +11,31 @@ type Mutation {
 
 type Post {
   id: ID!
+  author: Author!
+  authorId: ID!
   categories: [String!]!
   content: String!
   createdAt: String!
+  likes: Int
   published: Boolean!
   title: String!
   updatedAt: String
+  views: Int
+}
+
+type Author {
+  id: ID!
+  createdAt: String!
+  email: String!
+  first_name: String!
+  last_name: String!
+  posts: [Post!]!
+  role: Role!
+  updatedAt: String
+  username: String!
+}
+
+enum Role {
+  ADMIN
+  USER
 }

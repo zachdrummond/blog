@@ -11,11 +11,32 @@ datasource db {
 }
 
 model Post {
-  id        Int      @id @default(autoincrement())
+  id         Int      @id @default(autoincrement())
+  author     Author   @relation(fields: [authorId], references: [id])
+  authorId   Int
   categories String[]
-  content   String
-  createdAt DateTime @default(now())
-  published Boolean
-  title     String
-  updatedAt DateTime @default(now())
+  content    String
+  createdAt  DateTime @default(now())
+  likes      Int      @default(0)
+  published  Boolean  @default(false)
+  title      String
+  updatedAt  DateTime @default(now())
+  views      Int      @default(0)
+}
+
+model Author {
+  id         Int      @id @default(autoincrement())
+  createdAt  DateTime @default(now())
+  email      String   @unique
+  first_name String
+  last_name  String
+  posts      Post[]
+  role       Role     @default(USER)
+  updatedAt  DateTime @default(now())
+  username   String
+}
+
+enum Role {
+  USER
+  ADMIN
 }
