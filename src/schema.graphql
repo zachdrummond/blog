@@ -6,7 +6,25 @@ type Query {
 type Mutation {
     addPost(title: String!, content: String!, categories: [String!]!, published: Boolean): Post!
     deletePost(id: ID!): Post!
+    login(email: String!, password: String!): AuthPayload
     updatePost(id: ID!, title: String, content: String, categories: [String!], published: Boolean): Post!
+}
+
+type AuthPayload {
+  token: String
+  user: Author
+}
+
+type Author {
+  id: ID!
+  createdAt: String!
+  email: String!
+  first_name: String!
+  last_name: String!
+  posts: [Post!]!
+  role: Role!
+  updatedAt: String
+  username: String!
 }
 
 type Post {
@@ -21,18 +39,6 @@ type Post {
   title: String!
   updatedAt: String
   views: Int
-}
-
-type Author {
-  id: ID!
-  createdAt: String!
-  email: String!
-  first_name: String!
-  last_name: String!
-  posts: [Post!]!
-  role: Role!
-  updatedAt: String
-  username: String!
 }
 
 enum Role {
