@@ -1,0 +1,17 @@
+services:
+    postgres:
+        image: postgres:latest
+        container_name: zd_blog_pg_container
+        restart: unless-stopped
+        environment:
+            POSTGRES_USER: zd_blog_admin
+            POSTGRES_PASSWORD: zd_blog_password
+            POSTGRES_DB: zd_blog_pg_db
+        ports:
+            - "5432:5432"
+        volumes:
+            - pgdata:/var/lib/postgresql/data
+
+volumes:
+    pgdata:
+        name: zd_blog_pgdata
