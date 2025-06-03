@@ -1,8 +1,10 @@
 import * as jose from "jose";
 const APP_SECRET = "GraphQL-is-aw3some!";
 
-const getTokenPayload = (token: string) => {};
-const getUserID = (req?: Request, authToken?: string) => {
+const getTokenPayload = (token: string) => {
+
+};
+const getUserID = (req?, authToken?: string) => {
   if (req) {
     const authHeader = req.headers.authorization;
 
