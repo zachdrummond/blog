@@ -1,10 +1,11 @@
-import * as jose from "jose";
-const APP_SECRET = "GraphQL-is-aw3some!";
+import { jwtVerify } from "jose";
+export const APP_SECRET = "GraphQL-is-aw3some!";
 
-const getTokenPayload = (token: string) => {
-
+const getTokenPayload = async (token: string) => {
+    const { payload } =  await jwtVerify(token, new TextEncoder().encode(APP_SECRET));
+    return payload;
 };
-const getUserID = (req?, authToken?: string) => {
+export const getUserID = async (req?, authToken?: string) => {
   if (req) {
     const authHeader = req.headers.authorization;
 
@@ -15,17 +16,12 @@ const getUserID = (req?, authToken?: string) => {
         throw new Error("No token found");
       }
 
-      const { userID } = getTokenPayload(token);
+      const { userID } = await getTokenPayload(token);
       return userID;
     }
   } else if (authToken) {
-    const { userID } = getTokenPayload(token);
+    const { userID } = await getTokenPayload(authToken);
     return userID;
   }
   throw new Error('Not authenticated');
 };
-
-module.exports = {
-    APP_SECRET,
-    getUserID
-}
