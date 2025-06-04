@@ -42,12 +42,12 @@ const resolvers = {
     },
   },
   Mutation: {
-    addPost: (parent, { title, content, categories, published }, context) => {
+    addPost: (parent, { title, content, categories, published }, { prisma }) => {
       if (!title || !content || !categories)
         throw new Error("Title, content, and categories are required.");
 
       let current_date = new Date();
-      const newPost = context.prisma.post.create({
+      const newPost = prisma.post.create({
         data: {
           createdAt: current_date,
           updatedAt: current_date,

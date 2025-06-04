@@ -2,6 +2,45 @@ import { hash, verify } from "@node-rs/argon2";
 import { SignJWT } from "jose";
 import { APP_SECRET } from "../utils.js";
 
+export async function addPost(
+  parent,
+  { title, content, categories, published },
+  { prisma, userID },
+  info
+) {
+  if (!title || !content || !categories)
+    throw new Error("Missing required fields");
+
+  const newPost = await prisma.post.create({
+    data: {
+      author: {
+        connect: { id: userID },
+      },
+      categories,
+      content,
+      title,
+      published,
+    },
+  });
+
+  return newPost;
+}
+
+export async function deletePost(parent, { id, title }, { prisma }, info) {
+  if (!id && !title) throw new Error("Either ID or title must be provided");
+
+  return await prisma.post
+    .delete({
+      where: {
+        id: id ? parseInt(id, 10) : undefined,
+        title: title ? title : undefined,
+      },
+    })
+    .catch((error) => {
+      throw new Error(`Error deleting post: ${error.message}`);
+    });
+}
+
 export async function login(parent, { email, password }, { prisma }, info) {
   const user = await prisma.user.findUnique({ where: { email: email } });
   if (!user) throw new Error("User not found");
