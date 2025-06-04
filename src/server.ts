@@ -1,9 +1,12 @@
 import fs from "fs";
 import { dirname, join } from "path";
 import { fileURLToPath } from "url";
+
 import { ApolloServer } from "@apollo/server";
 import { startStandaloneServer } from "@apollo/server/standalone";
 import { PrismaClient } from "@prisma/client";
+
+import { getUserID } from "./utils.js";
 
 // GraphQL Resolvers = A collection of functions that fetch the data for the schema
 // parent = Result of previous resolver execution level
@@ -121,7 +124,11 @@ const startServer = async () => {
   const { url } = await startStandaloneServer(server, {
     listen: { port: 4000 },
     context: async ({ req, res }) => {
-      return { prisma };
+      return {
+        ...req,
+        prisma,
+        userID: req && req.headers.authorization ? await getUserID(req) : null,
+      };
     },
   });
   console.log(`🚀  Server ready at ${url}`);
