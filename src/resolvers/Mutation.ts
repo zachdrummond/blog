@@ -26,6 +26,14 @@ export async function addPost(
   return newPost;
 }
 
+const createNewToken = async (user) => {
+  return new SignJWT({ userID: user.id, role: user.role })
+    .setProtectedHeader({ alg: "HS256" })
+    .setIssuedAt()
+    .setExpirationTime("1h")
+    .sign(new TextEncoder().encode(APP_SECRET));
+};
+
 export async function deletePost(parent, { id, title }, { prisma }, info) {
   if (!id && !title) throw new Error("Either ID or title must be provided");
 
@@ -48,7 +56,7 @@ export async function login(parent, { email, password }, { prisma }, info) {
   const valid = await verify(user.password, password);
   if (!valid) throw new Error("Invalid password");
 
-  const token = await newToken(user);
+  const token = await createNewToken(user);
 
   return {
     token,
@@ -56,21 +64,45 @@ export async function login(parent, { email, password }, { prisma }, info) {
   };
 }
 
-const newToken = async (user) => {
-  return new SignJWT({ userID: user.id, role: user.role })
-    .setProtectedHeader({ alg: "HS256" })
-    .setIssuedAt()
-    .setExpirationTime("1h")
-    .sign(new TextEncoder().encode(APP_SECRET));
-};
-
 export async function signup(parent, args, { prisma }, info) {
   const password = await hash(args.password);
   const user = await prisma.user.create({ data: { ...args, password } });
-  const token = await newToken(user);
+  const token = await createNewToken(user);
 
   return {
     token,
     user,
   };
+}
+
+export async function updatePost(
+  parent,
+  { id, title, content, categories, published },
+  { prisma },
+  info
+) {
+  if (!id) throw new Error("ID is required");
+  if (
+    title === undefined &&
+    content === undefined &&
+    (categories === undefined || categories?.length === 0) &&
+    published === undefined
+  )
+    throw new Error("At least one field must be provided for update");
+
+  return await prisma.post
+    .update({
+      where: {
+        id: parseInt(id, 10),
+      },
+      data: {
+        title: title ? title : undefined,
+        content: content ? content : undefined,
+        categories: categories?.length > 0 ? categories : undefined,
+        published: published !== undefined ? published : undefined,
+      },
+    })
+    .catch((error) => {
+      throw new Error(`Error updating post: ${error.message}`);
+    });
 }
