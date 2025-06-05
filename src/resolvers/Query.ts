@@ -1,8 +1,8 @@
-function getAllPosts(parent, args, { prisma }) {
+export function getAllPosts(parent, args, { prisma }) {
   return prisma.post.findMany();
 }
 
-function getPosts(parent, { ids, titles, categories }, { prisma }) {
+export function getPosts(parent, { ids, titles, categories }, { prisma }) {
   if (
     (!ids && !titles && !categories) ||
     (ids?.length === 0 && titles?.length === 0 && categories?.length === 0)
@@ -23,8 +23,3 @@ function getPosts(parent, { ids, titles, categories }, { prisma }) {
     },
   });
 }
-
-module.exports = {
-  getAllPosts,
-  getPosts,
-};
