@@ -5,7 +5,7 @@ import { APP_SECRET } from "../utils.js";
 export async function addPost(
   parent,
   { title, content, categories, published },
-  { prisma, userID },
+  { prisma, authorID },
   info
 ) {
   if (!title || !content || !categories)
@@ -14,7 +14,7 @@ export async function addPost(
   const newPost = await prisma.post.create({
     data: {
       author: {
-        connect: { id: userID },
+        connect: { id: authorID },
       },
       categories,
       content,
@@ -26,8 +26,8 @@ export async function addPost(
   return newPost;
 }
 
-const createNewToken = async (user) => {
-  return new SignJWT({ userID: user.id, role: user.role })
+const createNewToken = async (author) => {
+  return new SignJWT({ authorID: author.id, role: author.role })
     .setProtectedHeader({ alg: "HS256" })
     .setIssuedAt()
     .setExpirationTime("1h")
@@ -50,28 +50,29 @@ export async function deletePost(parent, { id, title }, { prisma }, info) {
 }
 
 export async function login(parent, { email, password }, { prisma }, info) {
-  const user = await prisma.user.findUnique({ where: { email: email } });
-  if (!user) throw new Error("User not found");
+  const author = await prisma.author.findUnique({ where: { email: email } });
+  if (!author) throw new Error("author not found");
 
-  const valid = await verify(user.password, password);
+  const valid = await verify(author.password, password);
   if (!valid) throw new Error("Invalid password");
 
-  const token = await createNewToken(user);
+  const token = await createNewToken(author);
 
   return {
     token,
-    user,
+    author,
   };
 }
 
 export async function signup(parent, args, { prisma }, info) {
   const password = await hash(args.password);
-  const user = await prisma.user.create({ data: { ...args, password } });
-  const token = await createNewToken(user);
+  const author = await prisma.author.create({ data: { ...args, password } });
+  const token = await createNewToken(author);
 
+  console.log("Password", password, "author", author, "Token", token);
   return {
     token,
-    user,
+    author,
   };
 }
 

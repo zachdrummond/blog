@@ -6,7 +6,7 @@ import { ApolloServer } from "@apollo/server";
 import { startStandaloneServer } from "@apollo/server/standalone";
 import { PrismaClient } from "@prisma/client";
 
-import { getUserID } from "./utils.js";
+import { getAuthorID } from "./utils.js";
 import { Query, Mutation } from "./resolvers/index.js";
 
 // GraphQL Resolvers = A collection of functions that fetch the data for the schema
@@ -19,6 +19,8 @@ const resolvers = {
   Mutation: {
     addPost: Mutation.addPost,
     deletePost: Mutation.deletePost,
+    login: Mutation.login,
+    signup: Mutation.signup,
     updatePost: Mutation.updatePost,
   },
 };
@@ -43,7 +45,7 @@ const startServer = async () => {
       return {
         ...req,
         prisma,
-        userID: req && req.headers.authorization ? await getUserID(req) : null,
+        authorID: req && req.headers.authorization ? await getAuthorID(req) : null,
       };
     },
   });

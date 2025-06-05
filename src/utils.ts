@@ -5,7 +5,7 @@ const getTokenPayload = async (token: string) => {
     const { payload } =  await jwtVerify(token, new TextEncoder().encode(APP_SECRET));
     return payload;
 };
-export const getUserID = async (req?, authToken?: string) => {
+export const getAuthorID = async (req?, authToken?: string) => {
   if (req) {
     const authHeader = req.headers.authorization;
 
@@ -16,12 +16,12 @@ export const getUserID = async (req?, authToken?: string) => {
         throw new Error("No token found");
       }
 
-      const { userID } = await getTokenPayload(token);
-      return userID;
+      const { authorID } = await getTokenPayload(token);
+      return authorID;
     }
   } else if (authToken) {
-    const { userID } = await getTokenPayload(authToken);
-    return userID;
+    const { authorID } = await getTokenPayload(authToken);
+    return authorID;
   }
   throw new Error('Not authenticated');
 };
