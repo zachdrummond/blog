@@ -90,6 +90,40 @@ export async function signup(parent, args, { prisma }, info) {
   };
 }
 
+export async function updateAuthor(
+  parent,
+  { id, first_name, last_name, email, role, username },
+  { prisma },
+  info
+) {
+  if (!id) throw new Error("ID is required");
+  if (
+    first_name === undefined &&
+    last_name === undefined &&
+    email === undefined &&
+    role === undefined &&
+    username === undefined
+  )
+    throw new Error("At least one field must be provided for update");
+
+  return await prisma.author
+    .update({
+      where: {
+        id: parseInt(id, 10),
+      },
+      data: {
+        first_name: first_name ? first_name : undefined,
+        last_name: last_name ? last_name : undefined,
+        email: email ? email : undefined,
+        role: role ? role : undefined,
+        username: username ? username : undefined,
+      },
+    })
+    .catch((error) => {
+      throw new Error(`Error updating author: ${error.message}`);
+    });
+}
+
 export async function updatePost(
   parent,
   { id, title, content, categories, published },
