@@ -7,22 +7,15 @@ import { startStandaloneServer } from "@apollo/server/standalone";
 import { PrismaClient } from "@prisma/client";
 
 import { getAuthorID } from "./utils.js";
-import { Query, Mutation } from "./resolvers/index.js";
+import { Author, Query, Mutation, Post } from "./resolvers/index.js";
 
 // GraphQL Resolvers = A collection of functions that fetch the data for the schema
 // parent = Result of previous resolver execution level
 const resolvers = {
-  Query: {
-    getAllPosts: Query.getAllPosts,
-    getPosts: Query.getPosts,
-  },
-  Mutation: {
-    addPost: Mutation.addPost,
-    deletePost: Mutation.deletePost,
-    login: Mutation.login,
-    signup: Mutation.signup,
-    updatePost: Mutation.updatePost,
-  },
+  Query,
+  Mutation,
+  Author,
+  Post,
 };
 
 const __filename = fileURLToPath(import.meta.url);
@@ -45,7 +38,8 @@ const startServer = async () => {
       return {
         ...req,
         prisma,
-        authorID: req && req.headers.authorization ? await getAuthorID(req) : null,
+        authorID:
+          req && req.headers.authorization ? await getAuthorID(req) : null,
       };
     },
   });

@@ -69,7 +69,6 @@ export async function signup(parent, args, { prisma }, info) {
   const author = await prisma.author.create({ data: { ...args, password } });
   const token = await createNewToken(author);
 
-  console.log("Password", password, "author", author, "Token", token);
   return {
     token,
     author,

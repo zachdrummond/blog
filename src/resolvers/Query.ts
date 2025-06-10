@@ -2,6 +2,10 @@ export function getAllPosts(parent, args, { prisma }) {
   return prisma.post.findMany();
 }
 
+export function getAllAuthors(parent, args, { prisma }) {
+  return prisma.author.findMany();
+}
+
 export function getPosts(parent, { ids, titles, categories }, { prisma }) {
   if (
     (!ids && !titles && !categories) ||

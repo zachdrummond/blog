@@ -1,6 +1,8 @@
 type Query {
     getAllPosts: [Post!]!
+    getAllAuthors: [Author!]!
     getPosts(ids: [ID], titles: [String!], categories: [String!]): [Post!]!
+    getAuthors(ids: [ID], emails: [String!], role: Role, usernames: [String!]): [Author!]!
 }
 
 type Mutation {
@@ -13,7 +15,7 @@ type Mutation {
 
 type AuthPayload {
   token: String
-  user: Author
+  author: Author
 }
 
 type Author {
@@ -22,6 +24,7 @@ type Author {
   email: String!
   first_name: String!
   last_name: String!
+  password: String!
   posts: [Post!]!
   role: Role!
   updatedAt: String
@@ -44,5 +47,5 @@ type Post {
 
 enum Role {
   ADMIN
-  USER
+  AUTHOR
 }
