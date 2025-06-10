@@ -6,6 +6,29 @@ export function getAllAuthors(parent, args, { prisma }) {
   return prisma.author.findMany();
 }
 
+export function getAuthors(
+  parent,
+  { ids, emails, role, usernames },
+  { prisma }
+) {
+  if (
+    (!ids && !emails && !role && !usernames) ||
+    (ids?.length === 0 && emails?.length === 0 && role === undefined && usernames?.length === 0)
+  ) {
+    throw new Error("Either ID, email, role, or username must be provided.");
+  }
+  const where = {
+    OR: [
+      { id: { in: ids ? ids.map((id) => parseInt(id, 10)) : [] } },
+      { email: { in: emails ? emails : [] } },
+      { role: role ? role : undefined },
+      { username: { in: usernames ? usernames : [] } },
+    ],
+  };
+
+  return prisma.author.findMany({ where });
+}
+
 export function getPosts(parent, { ids, titles, categories }, { prisma }) {
   if (
     (!ids && !titles && !categories) ||

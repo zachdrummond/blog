@@ -10,7 +10,7 @@ export const getAuthorID = async (req?, authToken?: string) => {
     const authHeader = req.headers.authorization;
 
     if (authHeader) {
-      const token = authHeader.replace("Bearer", "");
+      const token = authHeader.replace("Bearer ", "");
 
       if (!token) {
         throw new Error("No token found");
