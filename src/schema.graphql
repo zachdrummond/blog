@@ -7,7 +7,8 @@ type Query {
 
 type Mutation {
     addPost(title: String!, content: String!, categories: [String!]!, published: Boolean): Post!
-    deletePost(id: ID!): Post!
+    deleteAuthor(id: ID, email: String): Author!
+    deletePost(id: ID, title: String): Post!
     login(email: String!, password: String!): AuthPayload
     signup(email: String!, password: String!, first_name: String!, last_name: String!, username: String!): AuthPayload
     updatePost(id: ID!, title: String, content: String, categories: [String!], published: Boolean): Post!

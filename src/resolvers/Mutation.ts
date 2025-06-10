@@ -34,6 +34,21 @@ const createNewToken = async (author) => {
     .sign(new TextEncoder().encode(APP_SECRET));
 };
 
+export async function deleteAuthor(parent, { id, email }, { prisma }, info) {
+  if (!id && !email) throw new Error("Either ID or email must be provided");
+
+  return await prisma.author
+    .delete({
+      where: {
+        id: id ? parseInt(id, 10) : undefined,
+        email: email ? email : undefined,
+      },
+    })
+    .catch((error) => {
+      throw new Error(`Error deleting author: ${error.message}`);
+    });
+}
+
 export async function deletePost(parent, { id, title }, { prisma }, info) {
   if (!id && !title) throw new Error("Either ID or title must be provided");
 
