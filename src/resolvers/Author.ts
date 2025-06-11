@@ -1,7 +1,7 @@
-export function posts(parent, args, { prisma }, info) {
+export function posts({ id }, args, { prisma }, info) {
   return prisma.author
     .findUnique({
-      where: { id: parent.id },
+      where: { id: id },
     })
     .posts();
 }

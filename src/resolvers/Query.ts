@@ -17,16 +17,16 @@ export function getAuthors(
   ) {
     throw new Error("Either ID, email, role, or username must be provided.");
   }
-  const where = {
-    OR: [
-      { id: { in: ids ? ids.map((id) => parseInt(id, 10)) : [] } },
-      { email: { in: emails ? emails : [] } },
-      { role: role ? role : undefined },
-      { username: { in: usernames ? usernames : [] } },
-    ],
-  };
-
-  return prisma.author.findMany({ where });
+  return prisma.author.findMany({
+    where: {
+      OR: [
+        { id: { in: ids ? ids.map((id) => parseInt(id, 10)) : [] } },
+        { email: { in: emails ? emails : [] } },
+        { role: role ? role : undefined },
+        { username: { in: usernames ? usernames : [] } },
+      ],
+    },
+  });
 }
 
 export function getPosts(parent, { ids, titles, categories }, { prisma }) {
