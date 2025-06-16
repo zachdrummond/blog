@@ -8,6 +8,7 @@ export async function addPost(
   { prisma, authorID },
   info
 ) {
+  if(!authorID) throw new Error("Unauthorized");
   if (!title || !content || !categories)
     throw new Error("Missing required fields");
 
@@ -61,6 +62,36 @@ export async function deletePost(parent, { id, title }, { prisma }, info) {
     })
     .catch((error) => {
       throw new Error(`Error deleting post: ${error.message}`);
+    });
+}
+
+export async function incrementPost(parent, { id, type }, { prisma }, info) {
+  if (!id || !type) throw new Error("Id and type is required");
+
+  let data = {
+    likes: {},
+    shares: {},
+    views: {},
+  };
+  if (type === "LIKE") {
+    data.likes = { increment: 1 };
+  } else if (type === "SHARE") {
+    data.shares = { increment: 1 };
+  } else if (type === "VIEW") {
+    data.views = { increment: 1 };
+  } else {
+    throw new Error("Invalid increment type");
+  }
+
+  return await prisma.post
+    .update({
+      where: {
+        id: parseInt(id, 10),
+      },
+      data,
+    })
+    .catch((error) => {
+      throw new Error(`Error incrementing post: ${error.message}`);
     });
 }
 

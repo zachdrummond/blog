@@ -1,5 +1,5 @@
 type Query {
-    getAllPosts: [Post!]!
+    getAllPosts(filter: String): [Post!]!
     getAllAuthors: [Author!]!
     getAuthors(ids: [ID], emails: [String!], role: Role, usernames: [String!]): [Author!]!
     getPosts(ids: [ID], titles: [String!], categories: [String!]): [Post!]!
@@ -9,6 +9,7 @@ type Mutation {
     addPost(title: String!, content: String!, categories: [String!]!, published: Boolean): Post!
     deleteAuthor(id: ID, email: String): Author!
     deletePost(id: ID, title: String): Post!
+    incrementPost(id: ID!, type: IncrementType!): Post!
     login(email: String!, password: String!): AuthPayload
     signup(email: String!, password: String!, first_name: String!, last_name: String!, username: String!): AuthPayload
     updateAuthor(id: ID!, first_name: String, last_name: String, email: String, role: Role, username: String): Author!
@@ -42,9 +43,16 @@ type Post {
   createdAt: String!
   likes: Int
   published: Boolean!
+  shares: Int
   title: String!
   updatedAt: String
   views: Int
+}
+
+enum IncrementType {
+  LIKE
+  SHARE
+  VIEW
 }
 
 enum Role {

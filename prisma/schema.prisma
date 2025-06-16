@@ -32,6 +32,7 @@ model Post {
   createdAt  DateTime @default(now())
   likes      Int      @default(0)
   published  Boolean  @default(false)
+  shares     Int      @default(0)
   title      String
   updatedAt  DateTime @default(now())
   views      Int      @default(0)
