@@ -1,10 +1,17 @@
-export function getAllPosts(parent, { skip, take, orderBy }, { prisma }) {
-  console.log(skip, take, orderBy);
-  return prisma.post.findMany({
+export async function getAllPosts(parent, { skip, take, orderBy }, { prisma }) {
+
+  const items = await prisma.post.findMany({
     skip,
     take,
-    orderBy
+    orderBy,
   });
+
+  const count = await prisma.post.count();
+
+  return {
+    count,
+    items,
+  };
 }
 
 export function getAllAuthors(parent, args, { prisma }) {
@@ -18,7 +25,10 @@ export function getAuthors(
 ) {
   if (
     (!ids && !emails && !role && !usernames) ||
-    (ids?.length === 0 && emails?.length === 0 && role === undefined && usernames?.length === 0)
+    (ids?.length === 0 &&
+      emails?.length === 0 &&
+      role === undefined &&
+      usernames?.length === 0)
   ) {
     throw new Error("Either ID, email, role, or username must be provided.");
   }

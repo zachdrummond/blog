@@ -1,5 +1,5 @@
 type Query {
-    getAllPosts(skip: Int, take: Int, orderBy: PostOrderBy): [Post!]!
+    getAllPosts(skip: Int, take: Int, orderBy: PostOrderBy): Feed!
     getAllAuthors: [Author!]!
     getAuthors(ids: [ID], emails: [String!], role: Role, usernames: [String!]): [Author!]!
     getPosts(ids: [ID], titles: [String!], categories: [String!]): [Post!]!
@@ -32,6 +32,11 @@ type Author {
   role: Role!
   updatedAt: String
   username: String!
+}
+
+type Feed {
+  count: Int!
+  items: [Post!]!
 }
 
 type Post {
