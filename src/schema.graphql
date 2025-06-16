@@ -1,5 +1,5 @@
 type Query {
-    getAllPosts: [Post!]!
+    getAllPosts(skip: Int, take: Int, orderBy: PostOrderBy): [Post!]!
     getAllAuthors: [Author!]!
     getAuthors(ids: [ID], emails: [String!], role: Role, usernames: [String!]): [Author!]!
     getPosts(ids: [ID], titles: [String!], categories: [String!]): [Post!]!
@@ -49,6 +49,15 @@ type Post {
   views: Int
 }
 
+input PostOrderBy {
+  createdAt: Sort
+  likes: Sort
+  shares: Sort
+  title: Sort
+  updatedAt: Sort
+  views: Sort
+}
+
 enum IncrementType {
   LIKE
   SHARE
@@ -58,4 +67,9 @@ enum IncrementType {
 enum Role {
   ADMIN
   AUTHOR
+}
+
+enum Sort {
+  asc
+  desc
 }

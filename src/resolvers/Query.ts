@@ -1,5 +1,10 @@
-export function getAllPosts(parent, args, { prisma }) {
-  return prisma.post.findMany();
+export function getAllPosts(parent, { skip, take, orderBy }, { prisma }) {
+  console.log(skip, take, orderBy);
+  return prisma.post.findMany({
+    skip,
+    take,
+    orderBy
+  });
 }
 
 export function getAllAuthors(parent, args, { prisma }) {
