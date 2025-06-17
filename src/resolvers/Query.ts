@@ -6,10 +6,10 @@ export async function getAllPosts(parent, { skip, take, orderBy }, { prisma }) {
     orderBy,
   });
 
-  const count = await prisma.post.count();
+  const total = await prisma.post.count();
 
   return {
-    count,
+    total,
     items,
   };
 }

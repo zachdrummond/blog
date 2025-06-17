@@ -20,13 +20,13 @@ export const getAuthorID = async (req?, authToken?: string) => {
       }
 
       const payload = await getTokenPayload(token);
-      console.log(payload);
+      // console.log(payload);
       const { authorID } = payload;
       return authorID;
     }
   } else if (authToken) {
     const payload = await getTokenPayload(authToken);
-    console.log(payload);
+    // console.log(payload);
     const { authorID } = payload;
     return authorID;
   }

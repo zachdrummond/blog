@@ -35,7 +35,7 @@ type Author {
 }
 
 type Feed {
-  count: Int!
+  total: Int!
   items: [Post!]!
 }
 

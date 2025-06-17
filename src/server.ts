@@ -7,15 +7,23 @@ import { startStandaloneServer } from "@apollo/server/standalone";
 import { PrismaClient } from "@prisma/client";
 
 import { getAuthorID } from "./utils.js";
-import { Author, Query, Mutation, Post } from "./resolvers/index.js";
+import { Author, Date, Query, Mutation, Post } from "./resolvers/index.js";
 
 // GraphQL Resolvers = A collection of functions that fetch the data for the schema
 // parent = Result of previous resolver execution level
 const resolvers = {
   Query,
   Mutation,
-  Author,
-  Post,
+  Author: {
+    ...Author,
+    createdAt: Date.createdAt,
+    updatedAt: Date.updatedAt,
+  },
+  Post: {
+    ...Post,
+    createdAt: Date.createdAt,
+    updatedAt: Date.updatedAt,
+  },
 };
 
 const __filename = fileURLToPath(import.meta.url);
