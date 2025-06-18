@@ -6,7 +6,7 @@ import { ApolloServer } from "@apollo/server";
 import { startStandaloneServer } from "@apollo/server/standalone";
 import { PrismaClient } from "@prisma/client";
 
-import { getAuthorID } from "./utils.js";
+import { getAuthor } from "./utils.js";
 import { Author, Date, Query, Mutation, Post } from "./resolvers/index.js";
 
 // GraphQL Resolvers = A collection of functions that fetch the data for the schema
@@ -46,8 +46,8 @@ const startServer = async () => {
       return {
         ...req,
         prisma,
-        authorID:
-          req && req.headers.authorization ? await getAuthorID(req) : null,
+        author:
+          req && req.headers.authorization ? await getAuthor(req) : null,
       };
     },
   });

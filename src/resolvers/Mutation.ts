@@ -28,7 +28,7 @@ export async function addPost(
 }
 
 const createNewToken = async (author) => {
-  return new SignJWT({ authorID: author.id, role: author.role })
+  return new SignJWT({ author_id: author.id, author_role: author.role })
     .setProtectedHeader({ alg: "HS256" })
     .setIssuedAt()
     .setExpirationTime("1h")

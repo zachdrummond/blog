@@ -16,6 +16,8 @@ type Mutation {
     updatePost(id: ID!, title: String, content: String, categories: [String!], published: Boolean): Post!
 }
 
+directive @auth(requires: Role = ADMIN) on FIELD_DEFINITION
+
 type AuthPayload {
   token: String
   author: Author
@@ -24,12 +26,11 @@ type AuthPayload {
 type Author {
   id: ID!
   createdAt: String!
-  email: String!
-  first_name: String!
-  last_name: String!
-  password: String!
+  email: String! @auth(requires: ADMIN)
+  first_name: String! @auth(requires: ADMIN)
+  last_name: String! @auth(requires: ADMIN)
   posts: [Post!]!
-  role: Role!
+  role: Role! @auth(requires: ADMIN)
   updatedAt: String
   username: String!
 }

@@ -14,7 +14,8 @@ export async function getAllPosts(parent, { skip, take, orderBy }, { prisma }) {
   };
 }
 
-export function getAllAuthors(parent, args, { prisma }) {
+export function getAllAuthors(parent, args, { prisma, author }) {
+  console.log("Author:", author.id, author.role);
   return prisma.author.findMany();
 }
 
