@@ -2,18 +2,19 @@ import { jwtVerify } from "jose";
 export const APP_SECRET = "GraphQL-is-aw3some!";
 
 export const getAuthor = async (req?, authToken?: string) => {
+  let payload;
   if (req) {
     const token = req.headers.authorization;
 
     if (token) {
-      const payload = await getTokenPayload(token);
-      return  { id: payload.author_id, role: payload.author_role };
+      payload = await getTokenPayload(token);
     }
   } else if (authToken) {
-    const payload = await getTokenPayload(authToken);
-    return { id: payload.author_id, role: payload.author_role };
+    payload = await getTokenPayload(authToken);
+  } else {
+    return null;
   }
-  throw new Error("Not authenticated");
+  return { id: payload.author_id, role: payload.author_role };
 };
 
 const getTokenPayload = async (token: string) => {
@@ -22,15 +23,4 @@ const getTokenPayload = async (token: string) => {
     new TextEncoder().encode(APP_SECRET)
   );
   return payload;
-};
-
-export const hasRole = (requiredRole, userRole) => {
-  if (!userRole) return false;
-  if (requiredRole === "ADMIN" && userRole === "ADMIN") return true;
-  if (
-    requiredRole === "AUTHOR" &&
-    (userRole === "ADMIN" || userRole === "AUTHOR")
-  )
-    return true;
-  return false;
 };

@@ -5,17 +5,17 @@ import { APP_SECRET } from "../utils.js";
 export async function addPost(
   parent,
   { title, content, categories, published },
-  { prisma, authorID },
+  { prisma, author },
   info
 ) {
-  if(!authorID) throw new Error("Unauthorized");
+  if(!author) throw new Error("Unauthorized");
   if (!title || !content || !categories)
     throw new Error("Missing required fields");
 
   const newPost = await prisma.post.create({
     data: {
       author: {
-        connect: { id: authorID },
+        connect: { id: author.id },
       },
       categories,
       content,
@@ -35,7 +35,8 @@ const createNewToken = async (author) => {
     .sign(new TextEncoder().encode(APP_SECRET));
 };
 
-export async function deleteAuthor(parent, { id, email }, { prisma }, info) {
+export async function deleteAuthor(parent, { id, email }, { prisma, author }, info) {
+  if(!author || author?.role !== "ADMIN") throw new Error("Unauthorized");
   if (!id && !email) throw new Error("Either ID or email must be provided");
 
   return await prisma.author
@@ -50,7 +51,8 @@ export async function deleteAuthor(parent, { id, email }, { prisma }, info) {
     });
 }
 
-export async function deletePost(parent, { id, title }, { prisma }, info) {
+export async function deletePost(parent, { id, title }, { prisma, author }, info) {
+  if(!author || author?.role !== "ADMIN") throw new Error("Unauthorized");
   if (!id && !title) throw new Error("Either ID or title must be provided");
 
   return await prisma.post
@@ -124,9 +126,10 @@ export async function signup(parent, args, { prisma }, info) {
 export async function updateAuthor(
   parent,
   { id, first_name, last_name, email, role, username },
-  { prisma },
+  { prisma, author },
   info
 ) {
+  if(!author || author?.role !== "ADMIN") throw new Error("Unauthorized");
   if (!id) throw new Error("ID is required");
   if (
     first_name === undefined &&
@@ -158,9 +161,10 @@ export async function updateAuthor(
 export async function updatePost(
   parent,
   { id, title, content, categories, published },
-  { prisma },
+  { prisma, author },
   info
 ) {
+  if(!author || author?.role !== "ADMIN") throw new Error("Unauthorized");
   if (!id) throw new Error("ID is required");
   if (
     title === undefined &&
