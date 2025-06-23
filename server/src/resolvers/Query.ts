@@ -31,11 +31,12 @@ export async function getAllPosts(
   };
 }
 
-export function getAllAuthors(parent, args, { prisma, author }) {
+export function getAllAuthors(parent, args, { prisma, author, where }) {
   return prisma.author.findMany({
     include: {
       posts: true,
     },
+    where,
     omit:
       author?.role === "ADMIN"
         ? {}
@@ -52,7 +53,7 @@ export function getAllAuthors(parent, args, { prisma, author }) {
 export function getAuthors(
   parent,
   { ids, emails, role, usernames },
-  { prisma }
+  { prisma, author }
 ) {
   if (
     (!ids && !emails && !role && !usernames) ||
@@ -63,16 +64,18 @@ export function getAuthors(
   ) {
     throw new Error("Either ID, email, role, or username must be provided.");
   }
-  return prisma.author.findMany({
-    where: {
-      OR: [
-        { id: { in: ids ? ids.map((id) => parseInt(id, 10)) : [] } },
-        { email: { in: emails ? emails : [] } },
-        { role: role ? role : undefined },
-        { username: { in: usernames ? usernames : [] } },
-      ],
-    },
-  });
+  if ((role || emails?.length > 0) && author?.role !== "ADMIN") {
+    throw new Error("Unauthorized");
+  }
+  const where = {
+    OR: [
+      { id: { in: ids ? ids.map((id) => parseInt(id, 10)) : [] } },
+      { email: { in: emails ? emails : [] } },
+      { role: role ? role : undefined },
+      { username: { in: usernames ? usernames : [] } },
+    ],
+  };
+  return getAllAuthors(parent, {}, { prisma, author, where });
 }
 
 export function getPosts(parent, { ids, titles, categories }, { prisma }) {
