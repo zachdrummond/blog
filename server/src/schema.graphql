@@ -26,13 +26,16 @@ type AuthPayload {
 type Author {
   id: ID!
   createdAt: String!
-  email: String! @auth(requires: ADMIN)
-  first_name: String! @auth(requires: ADMIN)
-  last_name: String! @auth(requires: ADMIN)
   posts: [Post!]!
-  role: Role! @auth(requires: ADMIN)
   updatedAt: String
   username: String!
+
+  # Protected fields
+  email: String @auth(requires: ADMIN)
+  password: String @auth(requires: ADMIN)
+  first_name: String @auth(requires: ADMIN)
+  last_name: String @auth(requires: ADMIN)
+  role: Role @auth(requires: ADMIN)
 }
 
 type Feed {

@@ -1,9 +1,26 @@
-export async function getAllPosts(parent, { skip, take, orderBy }, { prisma }) {
-
+export async function getAllPosts(
+  parent,
+  { skip, take, orderBy },
+  { prisma, author }
+) {
   const items = await prisma.post.findMany({
     skip,
     take,
     orderBy,
+    include: {
+      author: {
+        omit:
+          author?.role === "ADMIN"
+            ? {}
+            : {
+                email: true,
+                password: true,
+                first_name: true,
+                last_name: true,
+                role: true,
+              },
+      },
+    },
   });
 
   const total = await prisma.post.count();
@@ -15,8 +32,21 @@ export async function getAllPosts(parent, { skip, take, orderBy }, { prisma }) {
 }
 
 export function getAllAuthors(parent, args, { prisma, author }) {
-  console.log("Author:", author.id, author.role);
-  return prisma.author.findMany();
+  return prisma.author.findMany({
+    include: {
+      posts: true,
+    },
+    omit:
+      author?.role === "ADMIN"
+        ? {}
+        : {
+            email: true,
+            password: true,
+            first_name: true,
+            last_name: true,
+            role: true,
+          },
+  });
 }
 
 export function getAuthors(
