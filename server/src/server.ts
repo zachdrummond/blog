@@ -15,12 +15,12 @@ const resolvers = {
   Query,
   Mutation,
   Author: {
-    createdAt: Date.createdAt,
-    updatedAt: Date.updatedAt,
+    date_created: Date.formatDate,
+    date_updated: Date.formatDate,
   },
   Post: {
-    createdAt: Date.createdAt,
-    updatedAt: Date.updatedAt,
+    date_created: Date.formatDate,
+    date_updated: Date.formatDate,
   },
 };
 

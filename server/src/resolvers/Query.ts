@@ -1,9 +1,27 @@
-export function getAllAuthors(parent, args, { prisma, author, where }) {
+export function getAuthors(
+  parent,
+  { author_ids, emails, role, usernames },
+  { prisma, author }
+) {
+  if ((role || emails?.length > 0) && author?.role !== "ADMIN") {
+    throw new Error("Unauthorized");
+  }
   return prisma.author.findMany({
     include: {
       posts: true,
     },
-    where,
+    where: {
+      OR: [
+        {
+          id: {
+            in: author_ids ? author_ids.map((id) => parseInt(id, 10)) : [],
+          },
+        },
+        { email: { in: emails ? emails : [] } },
+        { role: role ? role : undefined },
+        { username: { in: usernames ? usernames : [] } },
+      ],
+    },
     omit:
       author?.role === "ADMIN"
         ? {}
@@ -17,15 +35,32 @@ export function getAllAuthors(parent, args, { prisma, author, where }) {
   });
 }
 
-export async function getAllPosts(
-  parent,
-  { skip, take, orderBy },
-  { prisma, author, where }
-) {
-  const items = await prisma.post.findMany({
+export async function getPosts(parent, args, { prisma, author }) {
+  const {
+    post_ids,
+    author_ids,
+    titles,
+    categories,
+    published,
     skip,
     take,
-    orderBy,
+    order_by,
+  } = args;
+  const query = {
+    where: {
+      OR: [
+        post_ids ? { id: { in: post_ids.map((id) => parseInt(id, 10)) } } : {},
+        author_ids
+          ? { authorId: { in: author_ids.map((id) => parseInt(id, 10)) } }
+          : {},
+        titles ? { title: { in: titles } } : {},
+        categories ? { categories: { hasSome: categories } } : {},
+        published !== undefined ? { published } : {},
+      ],
+    },
+    skip,
+    take,
+    order_by,
     include: {
       author: {
         omit:
@@ -40,7 +75,9 @@ export async function getAllPosts(
               },
       },
     },
-  });
+  };
+
+  const items = await prisma.post.findMany(query);
 
   const total = await prisma.post.count();
 
@@ -48,58 +85,4 @@ export async function getAllPosts(
     total,
     items,
   };
-}
-
-export function getAuthors(
-  parent,
-  { ids, emails, role, usernames },
-  { prisma, author }
-) {
-  if (
-    (!ids && !emails && !role && !usernames) ||
-    (ids?.length === 0 &&
-      emails?.length === 0 &&
-      role === undefined &&
-      usernames?.length === 0)
-  ) {
-    throw new Error("Either ID, email, role, or username must be provided.");
-  }
-  if ((role || emails?.length > 0) && author?.role !== "ADMIN") {
-    throw new Error("Unauthorized");
-  }
-  const where = {
-    OR: [
-      { id: { in: ids ? ids.map((id) => parseInt(id, 10)) : [] } },
-      { email: { in: emails ? emails : [] } },
-      { role: role ? role : undefined },
-      { username: { in: usernames ? usernames : [] } },
-    ],
-  };
-  return getAllAuthors(parent, {}, { prisma, author, where });
-}
-
-export function getPosts(
-  parent,
-  { ids, titles, categories },
-  { prisma, author }
-) {
-  if (
-    (!ids && !titles && !categories) ||
-    (ids?.length === 0 && titles?.length === 0 && categories?.length === 0)
-  ) {
-    throw new Error("Either ID, title, or category must be provided.");
-  }
-
-  // Convert string IDs to integers
-  const parsedIds = ids ? ids.map((id) => parseInt(id, 10)) : [];
-
-  const where = {
-    OR: [
-      { id: { in: parsedIds } },
-      { title: { in: titles ? titles : [] } },
-      { categories: { hasSome: categories ? categories : [] } },
-    ],
-  };
-
-  return getAllPosts(parent, {}, { prisma, author, where });
 }

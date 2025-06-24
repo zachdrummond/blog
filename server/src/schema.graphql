@@ -1,20 +1,17 @@
 type Query {
-    getAllPosts(skip: Int, take: Int, orderBy: PostOrderBy): Feed!
-    getAllAuthors: [Author!]!
-    getAuthors(ids: [ID], emails: [String!], role: Role, usernames: [String!]): [Author!]!
-    getPosts(ids: [ID], titles: [String!], categories: [String!]): [Post!]!
-    getPosts(postIds: [ID!], authorIds: [ID!], titles: [String!], categories: [String!], published: Boolean, skip: Int, take: Int, orderBy: PostOrderBy): Feed!
+    getAuthors(author_ids: [ID], emails: [String!], role: Role, usernames: [String!]): [Author!]!
+    getPosts(post_ids: [ID!], author_ids: [ID!], titles: [String!], categories: [String!], published: Boolean, skip: Int, take: Int, order_by: PostOrderBy): Feed!
 }
 
 type Mutation {
     addPost(title: String!, content: String!, categories: [String!]!, published: Boolean): Post!
-    deleteAuthor(id: ID, email: String): Author!
-    deletePost(id: ID, title: String): Post!
-    incrementPost(id: ID!, type: IncrementType!): Post!
+    deleteAuthor(author_id: ID, email: String): Author!
+    deletePost(post_id: ID, title: String): Post!
+    incrementPost(post_id: ID!, type: IncrementType!): Post!
     login(email: String!, password: String!): AuthPayload
     signup(email: String!, password: String!, first_name: String!, last_name: String!, username: String!): AuthPayload
-    updateAuthor(id: ID!, first_name: String, last_name: String, email: String, role: Role, username: String): Author!
-    updatePost(id: ID!, title: String, content: String, categories: [String!], published: Boolean): Post!
+    updateAuthor(author_id: ID!, first_name: String, last_name: String, email: String, role: Role, username: String): Author!
+    updatePost(post_id: ID!, title: String, content: String, categories: [String!], published: Boolean): Post!
 }
 
 directive @auth(requires: Role = ADMIN) on FIELD_DEFINITION
@@ -25,10 +22,10 @@ type AuthPayload {
 }
 
 type Author {
-  id: ID!
-  createdAt: String!
+  author_id: ID!
+  date_created: String!
+  date_updated: String!
   posts: [Post!]!
-  updatedAt: String
   username: String!
 
   # Protected fields
@@ -45,26 +42,26 @@ type Feed {
 }
 
 type Post {
-  id: ID!
+  post_id: ID!
   author: Author!
-  authorId: ID!
+  author_id: ID!
   categories: [String!]!
   content: String!
-  createdAt: String!
+  date_created: String!
+  date_updated: String!
   likes: Int
   published: Boolean!
   shares: Int
   title: String!
-  updatedAt: String
   views: Int
 }
 
 input PostOrderBy {
-  createdAt: Sort
+  date_created: Sort
+  date_updated: Sort
   likes: Sort
   shares: Sort
   title: Sort
-  updatedAt: Sort
   views: Sort
 }
 
