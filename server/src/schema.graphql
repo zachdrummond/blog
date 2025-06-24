@@ -3,6 +3,7 @@ type Query {
     getAllAuthors: [Author!]!
     getAuthors(ids: [ID], emails: [String!], role: Role, usernames: [String!]): [Author!]!
     getPosts(ids: [ID], titles: [String!], categories: [String!]): [Post!]!
+    getPosts(postIds: [ID!], authorIds: [ID!], titles: [String!], categories: [String!], published: Boolean, skip: Int, take: Int, orderBy: PostOrderBy): Feed!
 }
 
 type Mutation {

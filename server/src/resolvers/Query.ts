@@ -1,7 +1,26 @@
+export function getAllAuthors(parent, args, { prisma, author, where }) {
+  return prisma.author.findMany({
+    include: {
+      posts: true,
+    },
+    where,
+    omit:
+      author?.role === "ADMIN"
+        ? {}
+        : {
+            email: true,
+            password: true,
+            first_name: true,
+            last_name: true,
+            role: true,
+          },
+  });
+}
+
 export async function getAllPosts(
   parent,
   { skip, take, orderBy },
-  { prisma, author }
+  { prisma, author, where }
 ) {
   const items = await prisma.post.findMany({
     skip,
@@ -29,25 +48,6 @@ export async function getAllPosts(
     total,
     items,
   };
-}
-
-export function getAllAuthors(parent, args, { prisma, author, where }) {
-  return prisma.author.findMany({
-    include: {
-      posts: true,
-    },
-    where,
-    omit:
-      author?.role === "ADMIN"
-        ? {}
-        : {
-            email: true,
-            password: true,
-            first_name: true,
-            last_name: true,
-            role: true,
-          },
-  });
 }
 
 export function getAuthors(
@@ -78,7 +78,11 @@ export function getAuthors(
   return getAllAuthors(parent, {}, { prisma, author, where });
 }
 
-export function getPosts(parent, { ids, titles, categories }, { prisma }) {
+export function getPosts(
+  parent,
+  { ids, titles, categories },
+  { prisma, author }
+) {
   if (
     (!ids && !titles && !categories) ||
     (ids?.length === 0 && titles?.length === 0 && categories?.length === 0)
@@ -89,13 +93,13 @@ export function getPosts(parent, { ids, titles, categories }, { prisma }) {
   // Convert string IDs to integers
   const parsedIds = ids ? ids.map((id) => parseInt(id, 10)) : [];
 
-  return prisma.post.findMany({
-    where: {
-      OR: [
-        { id: { in: parsedIds } },
-        { title: { in: titles ? titles : [] } },
-        { categories: { hasSome: categories ? categories : [] } },
-      ],
-    },
-  });
+  const where = {
+    OR: [
+      { id: { in: parsedIds } },
+      { title: { in: titles ? titles : [] } },
+      { categories: { hasSome: categories ? categories : [] } },
+    ],
+  };
+
+  return getAllPosts(parent, {}, { prisma, author, where });
 }
