@@ -15,8 +15,7 @@
   },
   "prisma": {
     "generate": "prisma generate",
-    "migrate": "prisma migrate dev",
-    "seed": "tsx prisma/seed.ts"
+    "migrate": "prisma migrate dev"
   },
   "repository": {
     "type": "git",

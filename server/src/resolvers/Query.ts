@@ -1,3 +1,5 @@
+import { omitFields } from "../utils.js";
+
 export function getAuthors(
   parent,
   { author_ids, emails, role, usernames },
@@ -6,83 +8,94 @@ export function getAuthors(
   if ((role || emails?.length > 0) && author?.role !== "ADMIN") {
     throw new Error("Unauthorized");
   }
+
+  const orConditions = [];
+
+  if (author_ids?.length > 0) {
+    orConditions.push({
+      author: {
+        author_id: { in: author_ids.map((id) => parseInt(id, 10)) },
+      },
+    });
+  }
+
+  if (emails?.length > 0) {
+    orConditions.push({ email: { in: emails } });
+  }
+
+  if (role !== undefined) {
+    orConditions.push({ role });
+  }
+
+  if (usernames?.length > 0) {
+    orConditions.push({ username: { in: usernames } });
+  }
+
   return prisma.author.findMany({
     include: {
       posts: true,
     },
-    where: {
-      OR: [
-        {
-          id: {
-            in: author_ids ? author_ids.map((id) => parseInt(id, 10)) : [],
-          },
-        },
-        { email: { in: emails ? emails : [] } },
-        { role: role ? role : undefined },
-        { username: { in: usernames ? usernames : [] } },
-      ],
-    },
-    omit:
-      author?.role === "ADMIN"
-        ? {}
-        : {
-            email: true,
-            password: true,
-            first_name: true,
-            last_name: true,
-            role: true,
-          },
+    where: orConditions.length === 0 ? {} : { OR: orConditions },
+    omit: omitFields(author),
   });
 }
 
-export async function getPosts(parent, args, { prisma, author }) {
-  const {
+export async function getPosts(
+  parent,
+  {
     post_ids,
     author_ids,
     titles,
     categories,
     published,
-    skip,
-    take,
+    skip = 0,
+    take = 10,
     order_by,
-  } = args;
-  const query = {
-    where: {
-      OR: [
-        post_ids ? { id: { in: post_ids.map((id) => parseInt(id, 10)) } } : {},
-        author_ids
-          ? { authorId: { in: author_ids.map((id) => parseInt(id, 10)) } }
-          : {},
-        titles ? { title: { in: titles } } : {},
-        categories ? { categories: { hasSome: categories } } : {},
-        published !== undefined ? { published } : {},
-      ],
-    },
+  },
+  { prisma, author }
+) {
+  const orConditions = [];
+
+  if (post_ids?.length > 0) {
+    orConditions.push({
+      post_id: { in: post_ids.map((id) => parseInt(id, 10)) },
+    });
+  }
+
+  if (author_ids?.length > 0) {
+    orConditions.push({
+      author: {
+        author_id: { in: author_ids.map((id) => parseInt(id, 10)) },
+      },
+    });
+  }
+
+  if (titles?.length > 0) {
+    orConditions.push({ title: { in: titles } });
+  }
+
+  if (categories?.length > 0) {
+    orConditions.push({ categories: { hasSome: categories } });
+  }
+
+  if (published !== undefined) {
+    orConditions.push({ published });
+  }
+
+  const items = await prisma.post.findMany({
+    where: orConditions.length === 0 ? {} : { OR: orConditions },
     skip,
     take,
     order_by,
     include: {
       author: {
-        omit:
-          author?.role === "ADMIN"
-            ? {}
-            : {
-                email: true,
-                password: true,
-                first_name: true,
-                last_name: true,
-                role: true,
-              },
+        omit: omitFields(author),
       },
     },
-  };
-
-  const items = await prisma.post.findMany(query);
-
-  const total = await prisma.post.count();
+  });
 
   return {
-    total,
+    total: items.length,
     items,
   };
 }

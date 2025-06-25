@@ -25,7 +25,7 @@ type Author {
   author_id: ID!
   date_created: String!
   date_updated: String!
-  posts: [Post!]!
+  posts: [Post!]
   username: String!
 
   # Protected fields

@@ -8,19 +8,33 @@ export async function addPost(
   { prisma, author },
   info
 ) {
-  if(!author) throw new Error("Unauthorized");
+  if (!author) throw new Error("Unauthorized");
   if (!title || !content || !categories)
     throw new Error("Missing required fields");
 
   const newPost = await prisma.post.create({
     data: {
       author: {
-        connect: { id: author.id },
+        connect: { author_id: author.id },
       },
       categories,
       content,
       title,
       published,
+    },
+    include: {
+      author: {
+        omit:
+          author?.role === "ADMIN"
+            ? {}
+            : {
+                email: true,
+                password: true,
+                first_name: true,
+                last_name: true,
+                role: true,
+              },
+      },
     },
   });
 
@@ -28,21 +42,27 @@ export async function addPost(
 }
 
 const createNewToken = async (author) => {
-  return new SignJWT({ author_id: author.id, author_role: author.role })
+  return new SignJWT({ author_id: author.author_id, author_role: author.role })
     .setProtectedHeader({ alg: "HS256" })
     .setIssuedAt()
     .setExpirationTime("1h")
     .sign(new TextEncoder().encode(APP_SECRET));
 };
 
-export async function deleteAuthor(parent, { id, email }, { prisma, author }, info) {
-  if(!author || author?.role !== "ADMIN") throw new Error("Unauthorized");
-  if (!id && !email) throw new Error("Either ID or email must be provided");
+export async function deleteAuthor(
+  parent,
+  { author_id, email },
+  { prisma, author },
+  info
+) {
+  if (!author || author?.role !== "ADMIN") throw new Error("Unauthorized");
+  if (!author_id && !email)
+    throw new Error("Either ID or email must be provided");
 
   return await prisma.author
     .delete({
       where: {
-        id: id ? parseInt(id, 10) : undefined,
+        author_id: author_id ? parseInt(author_id, 10) : undefined,
         email: email ? email : undefined,
       },
     })
@@ -51,14 +71,20 @@ export async function deleteAuthor(parent, { id, email }, { prisma, author }, in
     });
 }
 
-export async function deletePost(parent, { id, title }, { prisma, author }, info) {
-  if(!author || author?.role !== "ADMIN") throw new Error("Unauthorized");
-  if (!id && !title) throw new Error("Either ID or title must be provided");
+export async function deletePost(
+  parent,
+  { post_id, title },
+  { prisma, author },
+  info
+) {
+  if (!author || author?.role !== "ADMIN") throw new Error("Unauthorized");
+  if (!post_id && !title)
+    throw new Error("Either ID or title must be provided");
 
   return await prisma.post
     .delete({
       where: {
-        id: id ? parseInt(id, 10) : undefined,
+        post_id: post_id ? parseInt(post_id, 10) : undefined,
         title: title ? title : undefined,
       },
     })
@@ -67,8 +93,13 @@ export async function deletePost(parent, { id, title }, { prisma, author }, info
     });
 }
 
-export async function incrementPost(parent, { id, type }, { prisma }, info) {
-  if (!id || !type) throw new Error("Id and type is required");
+export async function incrementPost(
+  parent,
+  { post_id, type },
+  { prisma },
+  info
+) {
+  if (!post_id || !type) throw new Error("Id and type is required");
 
   let data = {
     likes: {},
@@ -88,7 +119,7 @@ export async function incrementPost(parent, { id, type }, { prisma }, info) {
   return await prisma.post
     .update({
       where: {
-        id: parseInt(id, 10),
+        post_id: parseInt(post_id, 10),
       },
       data,
     })
@@ -114,7 +145,10 @@ export async function login(parent, { email, password }, { prisma }, info) {
 
 export async function signup(parent, args, { prisma }, info) {
   const password = await hash(args.password);
-  const author = await prisma.author.create({ data: { ...args, password } });
+  const author = await prisma.author.create({
+    data: { ...args, password },
+    omit: { password: true },
+  });
   const token = await createNewToken(author);
 
   return {
@@ -125,12 +159,12 @@ export async function signup(parent, args, { prisma }, info) {
 
 export async function updateAuthor(
   parent,
-  { id, first_name, last_name, email, role, username },
+  { author_id, first_name, last_name, email, role, username },
   { prisma, author },
   info
 ) {
-  if(!author || author?.role !== "ADMIN") throw new Error("Unauthorized");
-  if (!id) throw new Error("ID is required");
+  if (!author || author?.role !== "ADMIN") throw new Error("Unauthorized");
+  if (!author_id) throw new Error("ID is required");
   if (
     first_name === undefined &&
     last_name === undefined &&
@@ -143,7 +177,7 @@ export async function updateAuthor(
   return await prisma.author
     .update({
       where: {
-        id: parseInt(id, 10),
+        author_id: parseInt(author_id, 10),
       },
       data: {
         first_name: first_name ? first_name : undefined,
@@ -160,12 +194,12 @@ export async function updateAuthor(
 
 export async function updatePost(
   parent,
-  { id, title, content, categories, published },
+  { post_id, title, content, categories, published },
   { prisma, author },
   info
 ) {
-  if(!author || author?.role !== "ADMIN") throw new Error("Unauthorized");
-  if (!id) throw new Error("ID is required");
+  if (!author || author?.role !== "ADMIN") throw new Error("Unauthorized");
+  if (!post_id) throw new Error("ID is required");
   if (
     title === undefined &&
     content === undefined &&
@@ -177,7 +211,7 @@ export async function updatePost(
   return await prisma.post
     .update({
       where: {
-        id: parseInt(id, 10),
+        post_id: parseInt(post_id, 10),
       },
       data: {
         title: title ? title : undefined,
