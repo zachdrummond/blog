@@ -20,22 +20,22 @@ model Author {
   password     String
   posts        Post[]
   role         Role     @default(AUTHOR)
-  username     String
+  username     String   @unique
 }
 
 model Post {
-  post_id    Int      @id @default(autoincrement())
-  author     Author   @relation(fields: [author_id], references: [author_id], onDelete: Cascade, onUpdate: Cascade)
-  author_id  Int
-  categories String[]
-  content    String
+  post_id      Int      @id @default(autoincrement())
+  author       Author   @relation(fields: [author_id], references: [author_id], onDelete: Cascade, onUpdate: Cascade)
+  author_id    Int
+  categories   String[]
+  content      String
   date_created DateTime @default(now())
   date_updated DateTime @default(now())
-  likes      Int      @default(0)
-  published  Boolean  @default(false)
-  shares     Int      @default(0)
-  title      String
-  views      Int      @default(0)
+  likes        Int      @default(0)
+  published    Boolean  @default(false)
+  shares       Int      @default(0)
+  title        String
+  views        Int      @default(0)
 }
 
 enum Role {

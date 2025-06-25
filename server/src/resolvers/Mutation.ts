@@ -1,6 +1,6 @@
 import { hash, verify } from "@node-rs/argon2";
 import { SignJWT } from "jose";
-import { APP_SECRET } from "../utils.js";
+import { APP_SECRET, omitFields } from "../utils.js";
 
 export async function addPost(
   parent,
@@ -24,16 +24,7 @@ export async function addPost(
     },
     include: {
       author: {
-        omit:
-          author?.role === "ADMIN"
-            ? {}
-            : {
-                email: true,
-                password: true,
-                first_name: true,
-                last_name: true,
-                role: true,
-              },
+        omit: omitFields(author),
       },
     },
   });
@@ -65,6 +56,10 @@ export async function deleteAuthor(
         author_id: author_id ? parseInt(author_id, 10) : undefined,
         email: email ? email : undefined,
       },
+      select: {
+        author_id: true,
+        username: true,
+      },
     })
     .catch((error) => {
       throw new Error(`Error deleting author: ${error.message}`);
@@ -87,6 +82,11 @@ export async function deletePost(
         post_id: post_id ? parseInt(post_id, 10) : undefined,
         title: title ? title : undefined,
       },
+      include: {
+        author: {
+          omit: omitFields(author),
+        },
+      },
     })
     .catch((error) => {
       throw new Error(`Error deleting post: ${error.message}`);
@@ -96,32 +96,29 @@ export async function deletePost(
 export async function incrementPost(
   parent,
   { post_id, type },
-  { prisma },
+  { prisma, author },
   info
 ) {
   if (!post_id || !type) throw new Error("Id and type is required");
 
-  let data = {
-    likes: {},
-    shares: {},
-    views: {},
-  };
-  if (type === "LIKE") {
-    data.likes = { increment: 1 };
-  } else if (type === "SHARE") {
-    data.shares = { increment: 1 };
-  } else if (type === "VIEW") {
-    data.views = { increment: 1 };
-  } else {
-    throw new Error("Invalid increment type");
-  }
+  const data =
+    type === "LIKES"
+      ? { likes: { increment: 1 } }
+      : type === "SHARES"
+      ? { shares: { increment: 1 } }
+      : { views: { increment: 1 } };
 
   return await prisma.post
     .update({
+      data,
       where: {
         post_id: parseInt(post_id, 10),
       },
-      data,
+      include: {
+        author: {
+          omit: omitFields(author),
+        },
+      },
     })
     .catch((error) => {
       throw new Error(`Error incrementing post: ${error.message}`);
@@ -129,8 +126,10 @@ export async function incrementPost(
 }
 
 export async function login(parent, { email, password }, { prisma }, info) {
-  const author = await prisma.author.findUnique({ where: { email: email } });
-  if (!author) throw new Error("author not found");
+  const author = await prisma.author.findUnique({
+    where: { email: email },
+  });
+  if (!author) throw new Error("Author not found");
 
   const valid = await verify(author.password, password);
   if (!valid) throw new Error("Invalid password");
@@ -186,6 +185,7 @@ export async function updateAuthor(
         role: role ? role : undefined,
         username: username ? username : undefined,
       },
+      omit: omitFields(author),
     })
     .catch((error) => {
       throw new Error(`Error updating author: ${error.message}`);
@@ -218,6 +218,11 @@ export async function updatePost(
         content: content ? content : undefined,
         categories: categories?.length > 0 ? categories : undefined,
         published: published !== undefined ? published : undefined,
+      },
+      include: {
+        author: {
+          omit: omitFields(author),
+        },
       },
     })
     .catch((error) => {

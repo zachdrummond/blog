@@ -18,7 +18,7 @@ export const formatDate = (parent) => {
     minute: "2-digit",
     hour12: true,
   })}`;
-}
+};
 
 export const getAuthor = async (req?, authToken?: string) => {
   let payload;
@@ -40,7 +40,10 @@ const getTokenPayload = async (token: string) => {
   const { payload } = await jwtVerify(
     token,
     new TextEncoder().encode(APP_SECRET)
-  );
+  ).catch((error) => {
+    console.error("Error verifying token:", error);
+    throw new Error("Invalid token");
+  });
   return payload;
 };
 
@@ -54,4 +57,4 @@ export const omitFields = (author) => {
         last_name: true,
         role: true,
       };
-}
+};
