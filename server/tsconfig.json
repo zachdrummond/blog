@@ -1,15 +1,16 @@
 {
   "compilerOptions": {
-    "rootDirs": ["src"],
-    "outDir": "./dist",
+    "esModuleInterop": true,
     "lib": ["ESNext"],
-    "target": "ESNext",
     "module": "NodeNext",
     "moduleResolution": "NodeNext",
     "moduleDetection": "force", // Treat files as modules even if it doesn't use import/export
-    "esModuleInterop": true,
+    "outDir": "./dist",
+    "rootDirs": ["src"],
+    "strict": true,
+    "target": "ESNext",
     "types": ["node"]
   },
-  "include": ["src/**/*", "prisma/seed.ts"],
+  "include": ["src/**/*", "**/*.ts", "**/*.tsx", ],
   "exclude": ["node_modules"]
 }
