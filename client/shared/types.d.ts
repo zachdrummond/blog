@@ -5,15 +5,15 @@ declare interface AuthPayload {
 
 declare interface Author {
   author_id: number
-  date_created: string
-  date_updated: string
-  posts: [Post]
+  date_created: string | Date
+  date_updated: string | Date
+  posts?: [Post]
   username: string
-  email: string
-  password: string
-  first_name: string
-  last_name: string
-  role: 'ADMIN' | 'AUTHOR'
+  email?: string | null
+  password?: string | null
+  first_name?: string | null
+  last_name?: string | null
+  role?: 'ADMIN' | 'AUTHOR' | null
 }
 
 declare interface Feed {
@@ -27,11 +27,11 @@ declare interface Post {
   author: Author
   categories: [string]
   content: string
-  date_created: string
-  date_updated: string
-  likes: number
+  date_created: string | Date
+  date_updated: string | Date
+  likes?: number
   published: boolean
-  shares: number
+  shares?: number
   title: string
-  views: number
+  views?: number
 }
