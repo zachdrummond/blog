@@ -5,8 +5,8 @@ declare interface AuthPayload {
 
 declare interface Author {
   author_id: number
-  date_created: string | Date
-  date_updated: string | Date
+  date_created: string
+  date_updated: string
   posts?: [Post]
   username: string
   email?: string | null
@@ -27,8 +27,8 @@ declare interface Post {
   author: Author
   categories: [string]
   content: string
-  date_created: string | Date
-  date_updated: string | Date
+  date_created: string
+  date_updated: string
   likes?: number
   published: boolean
   shares?: number
