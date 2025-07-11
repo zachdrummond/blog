@@ -1,5 +1,6 @@
 "use client";
 import { gql, useMutation } from "@apollo/client";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 const CREATE_POST_MUTATION = gql`
@@ -37,6 +38,7 @@ export const CreatePost = () => {
     categories: [],
     published: false,
   });
+  const router = useRouter();
 
   const [createPost] = useMutation(CREATE_POST_MUTATION, {
     variables: {
@@ -45,6 +47,7 @@ export const CreatePost = () => {
       categories: formState.categories,
       published: formState.published,
     },
+    onCompleted: () => router.push("/"),
   });
 
   return (
