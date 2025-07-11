@@ -2,7 +2,7 @@ import Link from "next/link";
 
 export const Header = () => {
   return (
-    <div className="flex pal justify-between nowrap orange">
+    <header className="flex pal justify-between nowrap orange">
       <div className="flex flex-fixed black">
         <Link href="/" className="no-underline black">
           <div className="fw7 mr1">Zach Drummond's Blog</div>
@@ -15,6 +15,6 @@ export const Header = () => {
           submit
         </Link>
       </div>
-    </div>
+    </header>
   );
 };
