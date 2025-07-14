@@ -1,11 +1,13 @@
 "use client";
 
 import { HttpLink } from "@apollo/client";
+import { setContext } from "@apollo/client/link/context"
 import {
   ApolloNextAppProvider,
   ApolloClient,
   InMemoryCache,
 } from "@apollo/client-integration-nextjs";
+import { AUTH_TOKEN } from "shared/constants";
 
 function makeClient() {
   const httpLink = new HttpLink({
@@ -21,9 +23,19 @@ function makeClient() {
     // const { data } = useSuspenseQuery(MY_QUERY, { context: { fetchOptions: { ... }}});
   });
 
+  const authLink = setContext((_, { headers }) => {
+    const token = localStorage.getItem(AUTH_TOKEN);
+    return {
+      headers: {
+        ...headers,
+        authorization: token ? token : ''
+      }
+    }
+  })
+
   return new ApolloClient({
     cache: new InMemoryCache(),
-    link: httpLink,
+    link: authLink.concat(httpLink),
   });
 }
 

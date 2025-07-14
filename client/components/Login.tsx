@@ -135,7 +135,7 @@ export default function Login() {
       <div className="flex mt3">
         <button
           className="pointer mr2 button"
-          onClick={() => (form.login ? login : signup)}
+          onClick={() => (form.login ? login() : signup())}
         >
           {form.login ? "login" : "create account"}
         </button>

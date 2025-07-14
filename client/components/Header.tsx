@@ -2,11 +2,16 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 import { AUTH_TOKEN } from "shared/constants";
 
 export const Header = () => {
-  const authToken = localStorage.getItem(AUTH_TOKEN);
+  const [authToken, setAuthToken] = useState("");
   const router = useRouter();
+
+  useEffect(() => {
+    setAuthToken(localStorage.getItem(AUTH_TOKEN) ?? "");
+  }, [authToken]);
 
   return (
     <div className="flex pa1 justify-between nowrap orange">
