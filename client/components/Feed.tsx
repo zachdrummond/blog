@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import { Post } from "./Post";
 import { useQuery, gql } from "@apollo/client";
 
@@ -33,14 +33,13 @@ export const Feed = () => {
   const { data } = useQuery(GET_POSTS_QUERY);
 
   return (
-    <div>
-      <h1>HELLO WORLD!</h1>
-      {data?.getPosts?.items?.map((post) => (
-        <>
-          <Post key={post.post_id} post={post} />
+    <>
+      {data?.getPosts?.items?.map((post: Post, index: number) => (
+        <div key={post.post_id}>
+          <Post index={index} post={post} />
           <hr />
-        </>
+        </div>
       ))}
-    </div>
+    </>
   );
 };
