@@ -101,10 +101,11 @@ export async function incrementPost(
 ) {
   if (!post_id || !type) throw new Error("Id and type is required");
 
+
   const data =
-    type === "LIKES"
+  type === "LIKE"
       ? { likes: { increment: 1 } }
-      : type === "SHARES"
+      : type === "SHARE"
       ? { shares: { increment: 1 } }
       : { views: { increment: 1 } };
 
