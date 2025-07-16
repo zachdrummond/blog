@@ -21,6 +21,8 @@ declare interface Feed {
   items: [Post]
 }
 
+declare type IncrementType = 'LIKE' | 'VIEW' | 'SHARE';
+
 declare interface Post {
   post_id: number
   author_id: number
