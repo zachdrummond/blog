@@ -1,5 +1,5 @@
 import { gql, useMutation } from "@apollo/client";
-import { useState } from "react";
+import { GET_POSTS_QUERY } from "./Feed";
 
 const INCREMENT_POST_MUTATION = gql`
   mutation IncrementPostMutation($post_id: ID!, $type: IncrementType!) {
@@ -25,7 +25,38 @@ const INCREMENT_POST_MUTATION = gql`
 `;
 
 export const Post = ({ index, post }: { index: number; post: Post }) => {
-  const [incrementPost] = useMutation(INCREMENT_POST_MUTATION);
+  const [incrementPost] = useMutation(INCREMENT_POST_MUTATION, {
+    variables: {
+      post_id: post.post_id,
+    },
+    update: (cache, { data: { incrementPost } }) => {
+      const { getPosts } = cache.readQuery({
+        query: GET_POSTS_QUERY,
+      });
+
+      const updatedPosts = getPosts.items.map((feedPost) => {
+        if (feedPost.post_id === post.post_id) {
+          return {
+            ...feedPost,
+            likes: incrementPost.likes,
+            shares: incrementPost.shares,
+            views: incrementPost.views,
+          };
+        }
+        return feedPost;
+      });
+
+      cache.writeQuery({
+        query: GET_POSTS_QUERY,
+        data: {
+          getPosts: {
+            ...getPosts,
+            items: updatedPosts,
+          },
+        },
+      });
+    },
+  });
 
   const handleIncrement = (type: IncrementType) => {
     incrementPost({
@@ -35,7 +66,6 @@ export const Post = ({ index, post }: { index: number; post: Post }) => {
       },
     });
   };
-
 
   return (
     <div key={post.post_id}>

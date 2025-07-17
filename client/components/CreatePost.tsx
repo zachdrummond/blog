@@ -2,6 +2,7 @@
 import { gql, useMutation } from "@apollo/client";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { GET_POSTS_QUERY } from "./Feed";
 
 const CREATE_POST_MUTATION = gql`
   mutation CreatePostMutation(
@@ -46,6 +47,26 @@ export const CreatePost = () => {
       content: formState.content,
       categories: formState.categories,
       published: formState.published,
+    },
+    update: (cache, { data: { createPost } }) => {
+      // Read existing posts from cache
+      const existingData = cache.readQuery({
+        query: GET_POSTS_QUERY,
+      });
+
+      // If there's no existing data, don't try to update
+      if (!existingData?.getPosts) return;
+
+      cache.writeQuery({
+        query: GET_POSTS_QUERY,
+        data: {
+          getPosts: {
+            ...existingData.getPosts,
+            items: [createPost, ...existingData.getPosts.items],
+            total: existingData.getPosts.total + 1,
+          },
+        },
+      });
     },
     onCompleted: () => router.push("/"),
   });

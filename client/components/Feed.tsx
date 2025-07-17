@@ -2,7 +2,7 @@
 import { Post } from "./Post";
 import { useQuery, gql } from "@apollo/client";
 
-const GET_POSTS_QUERY = gql`
+export const GET_POSTS_QUERY = gql`
   {
     getPosts {
       total
