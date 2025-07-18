@@ -1,5 +1,9 @@
-import { Feed } from "@/components/Feed";
+import Feed from "@/components/Feed";
 
-export default function Home() {
-  return <Feed />;
+export default function HomePage() {
+  return (
+    <>
+      <Feed />
+    </>
+  );
 }

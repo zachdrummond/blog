@@ -13,15 +13,13 @@ declare interface Author {
   password?: string | null
   first_name?: string | null
   last_name?: string | null
-  role?: 'ADMIN' | 'AUTHOR' | null
+  role?: Role | null
 }
 
 declare interface Feed {
   total: number
   items: [Post]
 }
-
-declare type IncrementType = 'LIKE' | 'VIEW' | 'SHARE';
 
 declare interface Post {
   post_id: number
@@ -36,4 +34,29 @@ declare interface Post {
   shares?: number
   title: string
   views?: number
+}
+
+declare interface PostOrderBy {
+  date_created: Sort
+  date_updated: Sort
+  likes: Sort
+  shares: Sort
+  title: Sort
+  views: Sort
+}
+
+declare enum IncrementType {
+  LIKE,
+  SHARE,
+  VIEW
+}
+
+enum Role {
+  ADMIN,
+  AUTHOR
+}
+
+enum Sort {
+  asc,
+  desc
 }

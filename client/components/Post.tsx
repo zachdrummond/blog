@@ -24,7 +24,7 @@ const INCREMENT_POST_MUTATION = gql`
   }
 `;
 
-export const Post = ({ index, post }: { index: number; post: Post }) => {
+export default function Post({ index, post }: { index: number; post: Post }) {
   const [incrementPost] = useMutation(INCREMENT_POST_MUTATION, {
     variables: {
       post_id: post.post_id,
@@ -102,4 +102,4 @@ export const Post = ({ index, post }: { index: number; post: Post }) => {
       </div>
     </div>
   );
-};
+}

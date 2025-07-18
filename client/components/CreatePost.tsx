@@ -32,7 +32,7 @@ const CREATE_POST_MUTATION = gql`
   }
 `;
 
-export const CreatePost = () => {
+export default function CreatePost() {
   const [formState, setFormState] = useState({
     title: "",
     content: "",
@@ -103,4 +103,4 @@ export const CreatePost = () => {
       </form>
     </div>
   );
-};
+}

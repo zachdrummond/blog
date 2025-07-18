@@ -1,10 +1,28 @@
 "use client";
-import { Post } from "./Post";
+import Post from "./Post";
 import { useQuery, gql } from "@apollo/client";
 
 export const GET_POSTS_QUERY = gql`
-  {
-    getPosts {
+  query GetPostsQuery(
+    $post_ids: [ID!]
+    $author_ids: [ID!]
+    $titles: [String!]
+    $categories: [String!]
+    $published: Boolean
+    $skip: Int
+    $take: Int
+    $order_by: PostOrderBy
+  ) {
+    getPosts(
+      post_ids: $post_ids
+      author_ids: $author_ids
+      titles: $titles
+      categories: $categories
+      published: $published
+      skip: $skip
+      take: $take
+      order_by: $order_by
+    ) {
       total
       items {
         author {
@@ -29,7 +47,7 @@ export const GET_POSTS_QUERY = gql`
   }
 `;
 
-export const Feed = () => {
+export default function Feed() {
   const { data } = useQuery(GET_POSTS_QUERY);
 
   return (
@@ -41,4 +59,4 @@ export const Feed = () => {
       ))}
     </>
   );
-};
+}
