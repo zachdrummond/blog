@@ -1,9 +1,8 @@
 "use client";
 import { useQuery, gql } from "@apollo/client";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import Post from "./Post";
 import { LINKS_PER_PAGE } from "shared/constants";
-import { useRouter } from "next/navigation";
 
 export const GET_POSTS_QUERY = gql`
   query GetPostsQuery(
@@ -55,11 +54,15 @@ export default function Feed() {
   const params = useParams<{ page: string }>();
   const isNewPage: boolean = params?.page ? true : false;
   const pageNumber = isNewPage ? parseInt(params.page) : 0;
+  const pageIndex = isNewPage ? (pageNumber - 1) * LINKS_PER_PAGE : 0;
+
+  console.log(`isNewPage: ${isNewPage} && pageNumber: ${pageNumber}`);
 
   const getQueryVariables = (pageNumber: number) => {
     const skip: number = isNewPage ? (pageNumber - 1) * LINKS_PER_PAGE : 0;
     const take: number = isNewPage ? LINKS_PER_PAGE : 100;
     const orderBy = { date_created: "desc" };
+    console.log(`skip: ${skip} && take: ${take}`);
     return { skip, take, orderBy };
   };
 
@@ -82,7 +85,7 @@ export default function Feed() {
       {data && (
         <>
           {getPostsToRender(isNewPage, data).map((post, index) => (
-            <Post key={post.post_id} index={index} post={post} />
+            <Post key={post.post_id} index={index + pageIndex} post={post} />
           ))}
           {isNewPage && (
             <div className="flex ml4 mv3 gray">
@@ -94,7 +97,7 @@ export default function Feed() {
                   Previous
                 </div>
               )}
-              {pageNumber < data?.getPosts?.items.total / LINKS_PER_PAGE && (
+              {pageNumber <= data?.getPosts?.total / LINKS_PER_PAGE && (
                 <div
                   className="pointer"
                   onClick={() => router.push(`/new/${pageNumber + 1}`)}
