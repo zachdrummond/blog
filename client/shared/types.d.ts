@@ -37,26 +37,26 @@ declare interface Post {
 }
 
 declare interface PostOrderBy {
-  date_created: Sort
-  date_updated: Sort
-  likes: Sort
-  shares: Sort
-  title: Sort
-  views: Sort
+  date_created?: Sort
+  date_updated?: Sort
+  likes?: Sort
+  shares?: Sort
+  title?: Sort
+  views?: Sort
 }
 
 declare enum IncrementType {
-  LIKE,
-  SHARE,
-  VIEW
+  "LIKE",
+  "SHARE",
+  "VIEW"
 }
 
 enum Role {
-  ADMIN,
-  AUTHOR
+  "ADMIN",
+  "AUTHOR"
 }
 
 enum Sort {
-  asc,
-  desc
+  "asc",
+  "desc"
 }

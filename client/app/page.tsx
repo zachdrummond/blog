@@ -1,9 +1,5 @@
-import Feed from "@/components/Feed";
+import { redirect } from "next/navigation";
 
 export default function HomePage() {
-  return (
-    <>
-      <Feed />
-    </>
-  );
+  redirect("/new/1");
 }
