@@ -60,7 +60,6 @@ export default function Feed() {
     const skip: number = isNewPage ? (pageNumber - 1) * LINKS_PER_PAGE : 0;
     const take: number = isNewPage ? LINKS_PER_PAGE : 100;
     const orderBy = { date_created: "desc" };
-    console.log(pageNumber, skip, take, orderBy);
     return { skip, take, orderBy };
   };
 

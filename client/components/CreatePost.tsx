@@ -3,6 +3,7 @@ import { gql, useMutation } from "@apollo/client";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { GET_POSTS_QUERY } from "./Feed";
+import { LINKS_PER_PAGE } from "shared/constants";
 
 const CREATE_POST_MUTATION = gql`
   mutation CreatePostMutation(
@@ -41,6 +42,10 @@ export default function CreatePost() {
   });
   const router = useRouter();
 
+  const skip = 0;
+  const take = LINKS_PER_PAGE;
+  const orderBy = { date_created: "desc" };
+
   const [createPost] = useMutation(CREATE_POST_MUTATION, {
     variables: {
       title: formState.title,
@@ -52,6 +57,11 @@ export default function CreatePost() {
       // Read existing posts from cache
       const existingData = cache.readQuery({
         query: GET_POSTS_QUERY,
+        variables: {
+          skip,
+          take,
+          orderBy,
+        },
       });
 
       // If there's no existing data, don't try to update
@@ -65,6 +75,11 @@ export default function CreatePost() {
             items: [createPost, ...existingData.getPosts.items],
             total: existingData.getPosts.total + 1,
           },
+        },
+        variables: {
+          skip,
+          take,
+          orderBy,
         },
       });
     },

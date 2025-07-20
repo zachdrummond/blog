@@ -1,5 +1,6 @@
 import { gql, useMutation } from "@apollo/client";
 import { GET_POSTS_QUERY } from "./Feed";
+import { LINKS_PER_PAGE } from "shared/constants";
 
 const INCREMENT_POST_MUTATION = gql`
   mutation IncrementPostMutation($post_id: ID!, $type: IncrementType!) {
@@ -25,6 +26,10 @@ const INCREMENT_POST_MUTATION = gql`
 `;
 
 export default function Post({ index, post }: { index: number; post: Post }) {
+  const skip = 0;
+  const take = LINKS_PER_PAGE;
+  const orderBy = { date_created: "desc" };
+
   const [incrementPost] = useMutation(INCREMENT_POST_MUTATION, {
     variables: {
       post_id: post.post_id,
@@ -32,6 +37,11 @@ export default function Post({ index, post }: { index: number; post: Post }) {
     update: (cache, { data: { incrementPost } }) => {
       const { getPosts } = cache.readQuery({
         query: GET_POSTS_QUERY,
+        variables: {
+          skip,
+          take,
+          orderBy,
+        },
       });
 
       const updatedPosts = getPosts.items.map((feedPost) => {
@@ -53,6 +63,11 @@ export default function Post({ index, post }: { index: number; post: Post }) {
             ...getPosts,
             items: updatedPosts,
           },
+        },
+        variables: {
+          skip,
+          take,
+          orderBy,
         },
       });
     },
