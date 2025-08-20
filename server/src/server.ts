@@ -7,14 +7,14 @@ import { startStandaloneServer } from "@apollo/server/standalone";
 import { PrismaClient } from "@prisma/client";
 
 import { formatDate, getAuthor } from "./utils.js";
-import { Query, Mutation } from "./resolvers/index.js";
 import { queries } from "./resolvers/Query.js";
+import { mutations } from "./resolvers/Mutation.js";
 
 // GraphQL Resolvers = A collection of functions that fetch the data for the schema
 // parent = Result of previous resolver execution level
 const resolvers = {
   Query: queries,
-  Mutation,
+  Mutation: mutations,
   Author: {
     date_created: formatDate,
     date_updated: formatDate,
