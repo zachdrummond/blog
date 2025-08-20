@@ -1,5 +1,13 @@
-import { jwtVerify } from "jose";
+import { jwtVerify, SignJWT } from "jose";
 export const APP_SECRET = "GraphQL-is-aw3some!";
+
+export const createNewToken = async (author) => {
+  return new SignJWT({ author_id: author.author_id, author_role: author.role })
+    .setProtectedHeader({ alg: "HS256" })
+    .setIssuedAt()
+    .setExpirationTime("1h")
+    .sign(new TextEncoder().encode(APP_SECRET));
+};
 
 /**
  * Formats a date to MM/DD/YYYY format

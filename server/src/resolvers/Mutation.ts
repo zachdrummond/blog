@@ -1,6 +1,5 @@
 import { hash, verify } from "@node-rs/argon2";
-import { SignJWT } from "jose";
-import { APP_SECRET, omitFields } from "../utils.js";
+import { omitFields } from "../utils.js";
 import { MutationResolvers } from "../../shared/types.js";
 
 export const mutations: MutationResolvers = {
@@ -211,12 +210,4 @@ export const mutations: MutationResolvers = {
         throw new Error(`Error updating post: ${error.message}`);
       });
   },
-};
-
-const createNewToken = async (author) => {
-  return new SignJWT({ author_id: author.author_id, author_role: author.role })
-    .setProtectedHeader({ alg: "HS256" })
-    .setIssuedAt()
-    .setExpirationTime("1h")
-    .sign(new TextEncoder().encode(APP_SECRET));
 };
