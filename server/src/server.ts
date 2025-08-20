@@ -8,11 +8,12 @@ import { PrismaClient } from "@prisma/client";
 
 import { formatDate, getAuthor } from "./utils.js";
 import { Query, Mutation } from "./resolvers/index.js";
+import { queries } from "./resolvers/Query.js";
 
 // GraphQL Resolvers = A collection of functions that fetch the data for the schema
 // parent = Result of previous resolver execution level
 const resolvers = {
-  Query,
+  Query: queries,
   Mutation,
   Author: {
     date_created: formatDate,

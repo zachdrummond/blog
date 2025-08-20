@@ -5,13 +5,14 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "compile": "tsc && copyfiles -u 1 src/*.graphql dist/",
-    "dev": "tsx watch src/server.ts",
+    "compile": "npm run codegen && tsc",
+    "dev": "npm run codegen && tsx watch src/server.ts",
     "docker": "docker start zd_blog_pg_container",
     "prisma-reset": "npx prisma migrate reset --skip-seed",
     "prisma-update": "npx prisma migrate dev && npx prisma generate",
     "prisma-studio": "npx prisma studio",
-    "start": "npm run compile && node ./dist/server.js"
+    "start": "npm run compile && node ./dist/server.js",
+    "codegen": "graphql-codegen --config codegen.ts"
   },
   "prisma": {
     "generate": "prisma generate",
@@ -36,10 +37,13 @@
     "jose": "^6.0.11"
   },
   "devDependencies": {
+    "@graphql-codegen/cli": "5.0.7",
+    "@graphql-codegen/typescript": "4.1.6",
+    "@graphql-codegen/typescript-resolvers": "4.5.1",
     "@types/node": "^22.15.21",
-    "copyfiles": "^2.4.1",
     "prisma": "^6.10.1",
     "tsx": "^4.19.4",
-    "typescript": "^5.8.3"
+    "typescript": "^5.8.3",
+    "@graphql-codegen/introspection": "4.0.3"
   }
 }
