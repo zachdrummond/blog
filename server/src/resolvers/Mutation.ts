@@ -1,5 +1,5 @@
 import { hash, verify } from "@node-rs/argon2";
-import { omitFields } from "../utils.js";
+import { createNewToken, omitFields } from "../utils.js";
 import { MutationResolvers } from "../../shared/types.js";
 
 export const mutations: MutationResolvers = {
@@ -53,7 +53,7 @@ export const mutations: MutationResolvers = {
           username: true,
         },
       })
-      .catch((error) => {
+      .catch((error: any) => {
         throw new Error(`Error deleting author: ${error.message}`);
       });
   },
@@ -74,7 +74,7 @@ export const mutations: MutationResolvers = {
           },
         },
       })
-      .catch((error) => {
+      .catch((error: { message: any; }) => {
         throw new Error(`Error deleting post: ${error.message}`);
       });
   },
@@ -105,7 +105,7 @@ export const mutations: MutationResolvers = {
           },
         },
       })
-      .catch((error) => {
+      .catch((error: { message: any; }) => {
         throw new Error(`Error incrementing post: ${error.message}`);
       });
   },
@@ -169,11 +169,11 @@ export const mutations: MutationResolvers = {
         },
         omit: omitFields(author),
       })
-      .catch((error) => {
+      .catch((error: { message: any; }) => {
         throw new Error(`Error updating author: ${error.message}`);
       });
   },
-  updatePost: (
+  updatePost: async (
     parent,
     { post_id, title, content, categories, published },
     { prisma, author },
@@ -197,7 +197,7 @@ export const mutations: MutationResolvers = {
         data: {
           title: title ? title : undefined,
           content: content ? content : undefined,
-          categories: categories?.length > 0 ? categories : undefined,
+          categories: (categories?.length ?? 0) > 0 ? categories : undefined,
           published: published !== undefined ? published : undefined,
         },
         include: {
@@ -206,7 +206,7 @@ export const mutations: MutationResolvers = {
           },
         },
       })
-      .catch((error) => {
+      .catch((error: { message: any; }) => {
         throw new Error(`Error updating post: ${error.message}`);
       });
   },
