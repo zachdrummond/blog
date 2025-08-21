@@ -7,12 +7,4 @@ import { Resolvers } from "../../shared/types.js";
 export const resolvers: Resolvers = {
   Query: queries,
   Mutation: mutations,
-  Author: {
-    date_created: formatDate,
-    date_updated: formatDate,
-  },
-  Post: {
-    date_created: formatDate,
-    date_updated: formatDate,
-  },
 };
