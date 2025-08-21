@@ -7,21 +7,21 @@ export const queries: QueryResolvers = {
     { author_ids, emails, role, usernames },
     { prisma, author }
   ) => {
-    if ((role || emails?.length > 0) && author?.role !== "ADMIN") {
+    if ((role || (emails?.length ?? 0) > 0) && author?.role !== "ADMIN") {
       throw new Error("Unauthorized");
     }
 
     const orConditions = [];
 
-    if (author_ids?.length > 0) {
+    if ((author_ids?.length ?? 0) > 0) {
       orConditions.push({
         author: {
-          author_id: { in: author_ids.map((id) => parseInt(id, 10)) },
+          author_id: { in: (author_ids ?? []).filter((id): id is string => !!id).map((id) => parseInt(id, 10)) },
         },
       });
     }
 
-    if (emails?.length > 0) {
+    if ((emails?.length ?? 0) > 0) {
       orConditions.push({ email: { in: emails } });
     }
 
@@ -29,7 +29,7 @@ export const queries: QueryResolvers = {
       orConditions.push({ role });
     }
 
-    if (usernames?.length > 0) {
+    if ((usernames?.length ?? 0) > 0) {
       orConditions.push({ username: { in: usernames } });
     }
 
@@ -41,7 +41,7 @@ export const queries: QueryResolvers = {
       omit: omitFields(author),
     });
   },
-  getPosts: (
+  getPosts: async (
     parent,
     {
       post_ids,
@@ -57,25 +57,25 @@ export const queries: QueryResolvers = {
   ) => {
     const orConditions = [];
 
-    if (post_ids?.length > 0) {
+    if ((post_ids?.length ?? 0) > 0) {
       orConditions.push({
-        post_id: { in: post_ids.map((id) => parseInt(id, 10)) },
+        post_id: { in: (post_ids ?? []).filter((id): id is string => !!id).map((id) => parseInt(id, 10)) },
       });
     }
 
-    if (author_ids?.length > 0) {
+    if ((author_ids?.length ?? 0) > 0) {
       orConditions.push({
         author: {
-          author_id: { in: author_ids.map((id) => parseInt(id, 10)) },
+          author_id: { in: (author_ids ?? []).filter((id): id is string => !!id).map((id) => parseInt(id, 10)) },
         },
       });
     }
 
-    if (titles?.length > 0) {
+    if ((titles?.length ?? 0) > 0) {
       orConditions.push({ title: { in: titles } });
     }
 
-    if (categories?.length > 0) {
+    if ((categories?.length ?? 0) > 0) {
       orConditions.push({ categories: { hasSome: categories } });
     }
 
