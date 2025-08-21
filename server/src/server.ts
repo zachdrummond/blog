@@ -8,6 +8,12 @@ import { PrismaClient } from "@prisma/client";
 
 import { getAuthor } from "./utils.js";
 import { resolvers } from "./resolvers/resolvers.js";
+import { Author } from "../shared/types.js";
+
+export interface Context {
+  prisma: PrismaClient,
+  author: Author | null
+}
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -16,7 +22,7 @@ const prisma = new PrismaClient({
   errorFormat: "minimal",
 });
 
-const server = new ApolloServer({
+const server = new ApolloServer<Context>({
   typeDefs: fs.readFileSync(join(__dirname, "schema.graphql"), "utf-8"),
   resolvers,
 });
@@ -29,7 +35,7 @@ const startServer = async () => {
       return {
         ...req,
         prisma,
-        author: req && req.headers.authorization ? await getAuthor(req) : null,
+        author: req.headers?.authorization ? await getAuthor(req) : null,
       };
     },
   });

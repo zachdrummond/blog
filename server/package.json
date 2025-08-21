@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "compile": "npm run codegen && tsc",
-    "dev": "npm run codegen && tsx watch src/server.ts",
+    "dev": "tsx watch src/server.ts",
     "docker": "docker start zd_blog_pg_container",
     "prisma-reset": "npx prisma migrate reset --skip-seed",
     "prisma-update": "npx prisma migrate dev && npx prisma generate",

@@ -1,10 +1,10 @@
-import { jwtVerify, SignJWT } from "jose";
+import { jwtVerify, SignJWT, JWTPayload } from "jose";
 import { Author } from "../shared/types.js";
 import { IncomingMessage } from "http";
 export const APP_SECRET = "GraphQL-is-aw3some!";
 
 export const createNewToken = async (author: Author) => {
-  return new SignJWT({ author_id: author.author_id, author_role: author.role })
+  return new SignJWT(author)
     .setProtectedHeader({ alg: "HS256" })
     .setIssuedAt()
     .setExpirationTime("1h")
@@ -30,20 +30,20 @@ export const createNewToken = async (author: Author) => {
 //   })}`;
 // };
 
-export const getAuthor = async (req?: IncomingMessage, authToken?: string) => {
-  let payload;
+export const getAuthor = async (
+  req: IncomingMessage
+): Promise<Author | null> => {
   if (req) {
     const token = req.headers.authorization;
 
     if (token) {
-      payload = await getTokenPayload(token);
+      const payload: JWTPayload = await getTokenPayload(token);
+      const author: Author = payload.author as Author;
+      console.log(payload);
+      return author;
     }
-  } else if (authToken) {
-    payload = await getTokenPayload(authToken);
-  } else {
-    return null;
   }
-  return { id: payload?.author_id, role: payload?.author_role };
+  return null;
 };
 
 const getTokenPayload = async (token: string) => {
