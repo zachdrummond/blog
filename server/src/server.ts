@@ -10,9 +10,9 @@ import { getAuthor } from "./utils.js";
 import { resolvers } from "./resolvers/resolvers.js";
 import { Author } from "../shared/types.js";
 
-export interface Context {
-  prisma: PrismaClient,
-  author: Author | null
+export interface GraphQLContext {
+  prisma: PrismaClient;
+  author: Author | null;
 }
 
 const __filename = fileURLToPath(import.meta.url);

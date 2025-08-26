@@ -1,11 +1,14 @@
 import { GraphQLResolveInfo } from 'graphql';
+import { Author as AuthorModel, Post as PostModel } from '@prisma/client';
+import { GraphQLContext } from '../src/server.js';
 export type Maybe<T> = T | null;
-export type InputMaybe<T> = Maybe<T>;
+export type InputMaybe<T> = undefined | T;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
 export type MakeOptional<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]?: Maybe<T[SubKey]> };
 export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]: Maybe<T[SubKey]> };
 export type MakeEmpty<T extends { [key: string]: unknown }, K extends keyof T> = { [_ in K]?: never };
 export type Incremental<T> = T | { [P in keyof T]?: P extends ' $fragmentName' | '__typename' ? T[P] : never };
+export type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;
 export type RequireFields<T, K extends keyof T> = Omit<T, K> & { [P in K]-?: NonNullable<T[P]> };
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
@@ -181,7 +184,8 @@ export enum Sort {
   Desc = 'desc'
 }
 
-
+export type WithIndex<TObject> = TObject & Record<string, any>;
+export type ResolversObject<TObject> = WithIndex<TObject>;
 
 export type ResolverTypeWrapper<T> = Promise<T> | T;
 
@@ -251,51 +255,51 @@ export type DirectiveResolverFn<TResult = {}, TParent = {}, TContext = {}, TArgs
 
 
 /** Mapping between all available schema types and the resolvers types */
-export type ResolversTypes = {
-  AuthPayload: ResolverTypeWrapper<AuthPayload>;
-  Author: ResolverTypeWrapper<Author>;
+export type ResolversTypes = ResolversObject<{
+  AuthPayload: ResolverTypeWrapper<Omit<AuthPayload, 'author'> & { author?: Maybe<ResolversTypes['Author']> }>;
+  Author: ResolverTypeWrapper<AuthorModel>;
   Boolean: ResolverTypeWrapper<Scalars['Boolean']['output']>;
-  Feed: ResolverTypeWrapper<Feed>;
+  Feed: ResolverTypeWrapper<Omit<Feed, 'items'> & { items: Array<ResolversTypes['Post']> }>;
   ID: ResolverTypeWrapper<Scalars['ID']['output']>;
   IncrementType: IncrementType;
   Int: ResolverTypeWrapper<Scalars['Int']['output']>;
   Mutation: ResolverTypeWrapper<{}>;
-  Post: ResolverTypeWrapper<Post>;
+  Post: ResolverTypeWrapper<PostModel>;
   PostOrderBy: PostOrderBy;
   Query: ResolverTypeWrapper<{}>;
   Role: Role;
   Sort: Sort;
   String: ResolverTypeWrapper<Scalars['String']['output']>;
-};
+}>;
 
 /** Mapping between all available schema types and the resolvers parents */
-export type ResolversParentTypes = {
-  AuthPayload: AuthPayload;
-  Author: Author;
+export type ResolversParentTypes = ResolversObject<{
+  AuthPayload: Omit<AuthPayload, 'author'> & { author?: Maybe<ResolversParentTypes['Author']> };
+  Author: AuthorModel;
   Boolean: Scalars['Boolean']['output'];
-  Feed: Feed;
+  Feed: Omit<Feed, 'items'> & { items: Array<ResolversParentTypes['Post']> };
   ID: Scalars['ID']['output'];
   Int: Scalars['Int']['output'];
   Mutation: {};
-  Post: Post;
+  Post: PostModel;
   PostOrderBy: PostOrderBy;
   Query: {};
   String: Scalars['String']['output'];
-};
+}>;
 
 export type AuthDirectiveArgs = {
   requires?: Maybe<Role>;
 };
 
-export type AuthDirectiveResolver<Result, Parent, ContextType = any, Args = AuthDirectiveArgs> = DirectiveResolverFn<Result, Parent, ContextType, Args>;
+export type AuthDirectiveResolver<Result, Parent, ContextType = GraphQLContext, Args = AuthDirectiveArgs> = DirectiveResolverFn<Result, Parent, ContextType, Args>;
 
-export type AuthPayloadResolvers<ContextType = any, ParentType extends ResolversParentTypes['AuthPayload'] = ResolversParentTypes['AuthPayload']> = {
+export type AuthPayloadResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['AuthPayload'] = ResolversParentTypes['AuthPayload']> = ResolversObject<{
   author?: Resolver<Maybe<ResolversTypes['Author']>, ParentType, ContextType>;
   token?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
-};
+}>;
 
-export type AuthorResolvers<ContextType = any, ParentType extends ResolversParentTypes['Author'] = ResolversParentTypes['Author']> = {
+export type AuthorResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['Author'] = ResolversParentTypes['Author']> = ResolversObject<{
   author_id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   date_created?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   date_updated?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -307,15 +311,15 @@ export type AuthorResolvers<ContextType = any, ParentType extends ResolversParen
   role?: Resolver<Maybe<ResolversTypes['Role']>, ParentType, ContextType>;
   username?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
-};
+}>;
 
-export type FeedResolvers<ContextType = any, ParentType extends ResolversParentTypes['Feed'] = ResolversParentTypes['Feed']> = {
+export type FeedResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['Feed'] = ResolversParentTypes['Feed']> = ResolversObject<{
   items?: Resolver<Array<ResolversTypes['Post']>, ParentType, ContextType>;
   total?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
-};
+}>;
 
-export type MutationResolvers<ContextType = any, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = {
+export type MutationResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = ResolversObject<{
   addPost?: Resolver<ResolversTypes['Post'], ParentType, ContextType, RequireFields<MutationAddPostArgs, 'categories' | 'content' | 'title'>>;
   deleteAuthor?: Resolver<ResolversTypes['Author'], ParentType, ContextType, Partial<MutationDeleteAuthorArgs>>;
   deletePost?: Resolver<ResolversTypes['Post'], ParentType, ContextType, Partial<MutationDeletePostArgs>>;
@@ -324,9 +328,9 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   signup?: Resolver<Maybe<ResolversTypes['AuthPayload']>, ParentType, ContextType, RequireFields<MutationSignupArgs, 'email' | 'first_name' | 'last_name' | 'password' | 'username'>>;
   updateAuthor?: Resolver<ResolversTypes['Author'], ParentType, ContextType, RequireFields<MutationUpdateAuthorArgs, 'author_id'>>;
   updatePost?: Resolver<ResolversTypes['Post'], ParentType, ContextType, RequireFields<MutationUpdatePostArgs, 'post_id'>>;
-};
+}>;
 
-export type PostResolvers<ContextType = any, ParentType extends ResolversParentTypes['Post'] = ResolversParentTypes['Post']> = {
+export type PostResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['Post'] = ResolversParentTypes['Post']> = ResolversObject<{
   author?: Resolver<ResolversTypes['Author'], ParentType, ContextType>;
   author_id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   categories?: Resolver<Array<ResolversTypes['String']>, ParentType, ContextType>;
@@ -340,22 +344,22 @@ export type PostResolvers<ContextType = any, ParentType extends ResolversParentT
   title?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   views?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
-};
+}>;
 
-export type QueryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
+export type QueryResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = ResolversObject<{
   getAuthors?: Resolver<Array<ResolversTypes['Author']>, ParentType, ContextType, Partial<QueryGetAuthorsArgs>>;
   getPosts?: Resolver<ResolversTypes['Feed'], ParentType, ContextType, Partial<QueryGetPostsArgs>>;
-};
+}>;
 
-export type Resolvers<ContextType = any> = {
+export type Resolvers<ContextType = GraphQLContext> = ResolversObject<{
   AuthPayload?: AuthPayloadResolvers<ContextType>;
   Author?: AuthorResolvers<ContextType>;
   Feed?: FeedResolvers<ContextType>;
   Mutation?: MutationResolvers<ContextType>;
   Post?: PostResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
-};
+}>;
 
-export type DirectiveResolvers<ContextType = any> = {
+export type DirectiveResolvers<ContextType = GraphQLContext> = ResolversObject<{
   auth?: AuthDirectiveResolver<any, any, ContextType>;
-};
+}>;

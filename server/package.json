@@ -5,14 +5,14 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
+    "codegen": "graphql-codegen --config codegen.ts",
     "compile": "npm run codegen && tsc",
     "dev": "tsx watch src/server.ts",
     "docker": "docker start zd_blog_pg_container",
     "prisma-reset": "npx prisma migrate reset --skip-seed",
     "prisma-update": "npx prisma migrate dev && npx prisma generate",
     "prisma-studio": "npx prisma studio",
-    "start": "npm run compile && node ./dist/server.js",
-    "codegen": "graphql-codegen --config codegen.ts"
+    "start": "npm run compile && node ./dist/server.js"
   },
   "prisma": {
     "generate": "prisma generate",
