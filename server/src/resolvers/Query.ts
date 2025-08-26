@@ -15,9 +15,7 @@ export const queries: QueryResolvers = {
 
     if ((author_ids?.length ?? 0) > 0) {
       orConditions.push({
-        author: {
-          author_id: { in: (author_ids ?? []).filter((id): id is string => !!id).map((id) => parseInt(id, 10)) },
-        },
+        author_id: { in: (author_ids ?? []).filter((id): id is string => !!id).map((id) => parseInt(id, 10)) },
       });
     }
 
@@ -87,7 +85,7 @@ export const queries: QueryResolvers = {
       where: orConditions.length === 0 ? {} : { OR: orConditions },
       skip,
       take,
-      order_by,
+      orderBy: order_by,
       include: {
         author: {
           omit: omitFields(author),

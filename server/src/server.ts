@@ -12,7 +12,7 @@ import { Author } from "../shared/types.js";
 
 export interface GraphQLContext {
   prisma: PrismaClient;
-  author: Author | null;
+  author: Author;
 }
 
 const __filename = fileURLToPath(import.meta.url);
@@ -22,7 +22,7 @@ const prisma = new PrismaClient({
   errorFormat: "minimal",
 });
 
-const server = new ApolloServer<Context>({
+const server = new ApolloServer<GraphQLContext>({
   typeDefs: fs.readFileSync(join(__dirname, "schema.graphql"), "utf-8"),
   resolvers,
 });
@@ -35,7 +35,7 @@ const startServer = async () => {
       return {
         ...req,
         prisma,
-        author: req.headers?.authorization ? await getAuthor(req) : null,
+        author: await getAuthor(req),
       };
     },
   });

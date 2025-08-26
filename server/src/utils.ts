@@ -30,20 +30,23 @@ export const createNewToken = async (author: Author) => {
 //   })}`;
 // };
 
-export const getAuthor = async (
-  req: IncomingMessage
-): Promise<Author | null> => {
-  if (req) {
-    const token = req.headers.authorization;
+export const getAuthor = async (req: IncomingMessage): Promise<Author> => {
+  const token = req?.headers?.authorization;
 
-    if (token) {
-      const payload: JWTPayload = await getTokenPayload(token);
-      const author: Author = payload.author as Author;
-      console.log(payload);
-      return author;
-    }
+  if (token) {
+    const payload: JWTPayload = await getTokenPayload(token);
+    const author: Author = payload.author as Author;
+    console.log(payload);
+    return author;
+  } else {
+    return {
+      author_id: "",
+      date_created: "",
+      date_updated: "",
+      posts: [],
+      username: "",
+    };
   }
-  return null;
 };
 
 const getTokenPayload = async (token: string) => {
@@ -58,7 +61,7 @@ const getTokenPayload = async (token: string) => {
 };
 
 export const omitFields = (author: Author) => {
-  return author?.role === "ADMIN"
+  return author.role === "ADMIN"
     ? { password: true }
     : {
         email: true,
