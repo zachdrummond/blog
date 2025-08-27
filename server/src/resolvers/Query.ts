@@ -15,7 +15,8 @@ export const queries: QueryResolvers = {
 
     if ((author_ids?.length ?? 0) > 0) {
       orConditions.push({
-        author_id: { in: (author_ids ?? []).filter((id): id is string => !!id).map((id) => parseInt(id, 10)) },
+        author_id: { in: (author_ids ?? []).map((id) => id) },
+        // author_id: { in: (author_ids ?? []).filter((id): id  => !!id).map((id) => parseInt(id, 10)) },
       });
     }
 

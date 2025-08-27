@@ -1,17 +1,17 @@
 type Query {
-    getAuthors(author_ids: [ID], emails: [String!], role: Role, usernames: [String!]): [Author!]!
-    getPosts(post_ids: [ID!], author_ids: [ID!], titles: [String!], categories: [String!], published: Boolean, skip: Int, take: Int, order_by: PostOrderBy): Feed!
+    getAuthors(author_ids: [Int], emails: [String!], role: Role, usernames: [String!]): [Author!]!
+    getPosts(post_ids: [Int!], author_ids: [Int!], titles: [String!], categories: [String!], published: Boolean, skip: Int, take: Int, order_by: PostOrderBy): Feed!
 }
 
 type Mutation {
     addPost(title: String!, content: String!, categories: [String!]!, published: Boolean): Post!
-    deleteAuthor(author_id: ID, email: String): Author!
-    deletePost(post_id: ID, title: String): Post!
-    incrementPost(post_id: ID!, type: IncrementType!): Post!
+    deleteAuthor(author_id: Int, email: String): Author!
+    deletePost(post_id: Int, title: String): Post!
+    incrementPost(post_id: Int!, type: IncrementType!): Post!
     login(email: String!, password: String!): AuthPayload
     signup(email: String!, password: String!, first_name: String!, last_name: String!, username: String!): AuthPayload
-    updateAuthor(author_id: ID!, first_name: String, last_name: String, email: String, role: Role, username: String): Author!
-    updatePost(post_id: ID!, title: String, content: String, categories: [String!], published: Boolean): Post!
+    updateAuthor(author_id: Int!, first_name: String, last_name: String, email: String, role: Role, username: String): Author!
+    updatePost(post_id: Int!, title: String, content: String, categories: [String!], published: Boolean): Post!
 }
 
 directive @auth(requires: Role = ADMIN) on FIELD_DEFINITION
@@ -22,9 +22,9 @@ type AuthPayload {
 }
 
 type Author {
-  author_id: ID!
-  date_created: String!
-  date_updated: String!
+  author_id: Int!
+  date_created: Date!
+  date_updated: Date!
   posts: [Post!]
   username: String!
 
@@ -33,7 +33,7 @@ type Author {
   password: String @auth(requires: ADMIN)
   first_name: String @auth(requires: ADMIN)
   last_name: String @auth(requires: ADMIN)
-  role: Role @auth(requires: ADMIN)
+  role: Role! @auth(requires: ADMIN)
 }
 
 type Feed {
@@ -42,13 +42,13 @@ type Feed {
 }
 
 type Post {
-  post_id: ID!
+  post_id: Int!
   author: Author!
-  author_id: ID!
+  author_id: Int!
   categories: [String!]!
   content: String!
-  date_created: String!
-  date_updated: String!
+  date_created: Date!
+  date_updated: Date!
   likes: Int
   published: Boolean!
   shares: Int
@@ -64,6 +64,8 @@ input PostOrderBy {
   title: Sort
   views: Sort
 }
+
+scalar Date
 
 enum IncrementType {
   LIKE

@@ -16,7 +16,7 @@ export const mutations: MutationResolvers = {
     const newPost = await prisma.post.create({
       data: {
         author: {
-          connect: { author_id: author.id },
+          connect: { author_id: author.author_id },
         },
         categories,
         content,
@@ -45,13 +45,13 @@ export const mutations: MutationResolvers = {
     return await prisma.author
       .delete({
         where: {
-          author_id: author_id ? parseInt(author_id, 10) : undefined,
+          author_id: author_id ?? undefined,
           email: email ? email : undefined,
         },
-        select: {
-          author_id: true,
-          username: true,
-        },
+        // select: {
+        //   author_id: true,
+        //   username: true,
+        // },
       })
       .catch((error: any) => {
         throw new Error(`Error deleting author: ${error.message}`);
@@ -65,7 +65,7 @@ export const mutations: MutationResolvers = {
     return await prisma.post
       .delete({
         where: {
-          post_id: post_id ? parseInt(post_id, 10) : undefined,
+          post_id: post_id ?? undefined,
           title: title ? title : undefined,
         },
         include: {
@@ -97,7 +97,7 @@ export const mutations: MutationResolvers = {
       .update({
         data,
         where: {
-          post_id: parseInt(post_id, 10),
+          post_id: post_id
         },
         include: {
           author: {
@@ -129,7 +129,7 @@ export const mutations: MutationResolvers = {
     const password = await hash(args.password);
     const author = await prisma.author.create({
       data: { ...args, password },
-      omit: { password: true },
+      // omit: { password: true },
     });
     const token = await createNewToken(author);
 
@@ -158,7 +158,7 @@ export const mutations: MutationResolvers = {
     return await prisma.author
       .update({
         where: {
-          author_id: parseInt(author_id, 10),
+          author_id: author_id
         },
         data: {
           first_name: first_name ? first_name : undefined,
@@ -192,7 +192,7 @@ export const mutations: MutationResolvers = {
     return await prisma.post
       .update({
         where: {
-          post_id: parseInt(post_id, 10),
+          post_id: post_id
         },
         data: {
           title: title ? title : undefined,

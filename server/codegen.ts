@@ -8,12 +8,16 @@ const config: CodegenConfig = {
       plugins: ["typescript", "typescript-resolvers"],
       config: {
         contextType: "../src/server.js#GraphQLContext",
-        useIndexSignature: true,
+        inputMaybeValue: "undefined | T",
         mappers: {
           Author: "@prisma/client#Author as AuthorModel",
           Post: "@prisma/client#Post as PostModel",
+          Role: '@prisma/client#Role'
         },
-        inputMaybeValue: "undefined | T"
+        scalars: {
+          Date: 'Date',
+        },
+        useIndexSignature: true,
       },
     },
   },

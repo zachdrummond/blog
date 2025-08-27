@@ -40,7 +40,7 @@ export const getAuthor = async (req: IncomingMessage): Promise<Author> => {
     return author;
   } else {
     return {
-      author_id: "",
+      author_id: 0,
       date_created: "",
       date_updated: "",
       posts: [],
