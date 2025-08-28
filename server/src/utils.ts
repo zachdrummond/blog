@@ -44,7 +44,7 @@ export const getAuthor = async (req: IncomingMessage): Promise<Author> => {
       date_updated: new Date(),
       posts: [],
       username: "",
-      role: "AUTHOR"
+      role: "GUEST"
     };
   }
 };

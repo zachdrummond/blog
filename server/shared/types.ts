@@ -156,7 +156,7 @@ export type Query = {
 
 
 export type QueryGetAuthorsArgs = {
-  author_ids?: InputMaybe<Array<InputMaybe<Scalars['Int']['input']>>>;
+  author_ids?: InputMaybe<Array<Scalars['Int']['input']>>;
   emails?: InputMaybe<Array<Scalars['String']['input']>>;
   role?: InputMaybe<Role>;
   usernames?: InputMaybe<Array<Scalars['String']['input']>>;
@@ -176,7 +176,8 @@ export type QueryGetPostsArgs = {
 
 export type Role =
   | 'ADMIN'
-  | 'AUTHOR';
+  | 'AUTHOR'
+  | 'GUEST';
 
 export type Sort =
   | 'asc'

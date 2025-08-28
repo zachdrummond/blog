@@ -41,4 +41,5 @@ model Post {
 enum Role {
   ADMIN
   AUTHOR
+  GUEST
 }

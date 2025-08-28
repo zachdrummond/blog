@@ -1,5 +1,5 @@
 type Query {
-    getAuthors(author_ids: [Int], emails: [String!], role: Role, usernames: [String!]): [Author!]!
+    getAuthors(author_ids: [Int!], emails: [String!], role: Role, usernames: [String!]): [Author!]!
     getPosts(post_ids: [Int!], author_ids: [Int!], titles: [String!], categories: [String!], published: Boolean, skip: Int, take: Int, order_by: PostOrderBy): Feed!
 }
 
@@ -76,6 +76,7 @@ enum IncrementType {
 enum Role {
   ADMIN
   AUTHOR
+  GUEST
 }
 
 enum Sort {
