@@ -41,10 +41,11 @@ export const getAuthor = async (req: IncomingMessage): Promise<Author> => {
   } else {
     return {
       author_id: 0,
-      date_created: "",
-      date_updated: "",
+      date_created: new Date(),
+      date_updated: new Date(),
       posts: [],
       username: "",
+      role: "AUTHOR"
     };
   }
 };
