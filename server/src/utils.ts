@@ -36,7 +36,6 @@ export const getAuthor = async (req: IncomingMessage): Promise<Author> => {
   if (token) {
     const payload: JWTPayload = await getTokenPayload(token);
     const author: Author = payload.author as Author;
-    console.log(payload);
     return author;
   } else {
     return {

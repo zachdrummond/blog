@@ -1,5 +1,5 @@
 import { GraphQLResolveInfo, GraphQLScalarType, GraphQLScalarTypeConfig } from 'graphql';
-import { Author as AuthorModel, Post as PostModel, Role } from '@prisma/client';
+import { Author as AuthorModel, Post as PostModel } from '@prisma/client';
 import { GraphQLContext } from '../src/server.js';
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = undefined | T;
@@ -10,7 +10,6 @@ export type MakeEmpty<T extends { [key: string]: unknown }, K extends keyof T> =
 export type Incremental<T> = T | { [P in keyof T]?: P extends ' $fragmentName' | '__typename' ? T[P] : never };
 export type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;
 export type RequireFields<T, K extends keyof T> = Omit<T, K> & { [P in K]-?: NonNullable<T[P]> };
-export type EnumResolverSignature<T, AllowedValues = any> = { [key in keyof T]?: AllowedValues };
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
   ID: { input: string; output: string; }
@@ -47,11 +46,10 @@ export type Feed = {
   total: Scalars['Int']['output'];
 };
 
-export enum IncrementType {
-  Like = 'LIKE',
-  Share = 'SHARE',
-  View = 'VIEW'
-}
+export type IncrementType =
+  | 'LIKE'
+  | 'SHARE'
+  | 'VIEW';
 
 export type Mutation = {
   __typename?: 'Mutation';
@@ -176,15 +174,13 @@ export type QueryGetPostsArgs = {
   titles?: InputMaybe<Array<Scalars['String']['input']>>;
 };
 
-export enum Role {
-  Admin = 'ADMIN',
-  Author = 'AUTHOR'
-}
+export type Role =
+  | 'ADMIN'
+  | 'AUTHOR';
 
-export enum Sort {
-  Asc = 'asc',
-  Desc = 'desc'
-}
+export type Sort =
+  | 'asc'
+  | 'desc';
 
 export type WithIndex<TObject> = TObject & Record<string, any>;
 export type ResolversObject<TObject> = WithIndex<TObject>;
@@ -269,7 +265,7 @@ export type ResolversTypes = ResolversObject<{
   Post: ResolverTypeWrapper<PostModel>;
   PostOrderBy: PostOrderBy;
   Query: ResolverTypeWrapper<{}>;
-  Role: ResolverTypeWrapper<Role>;
+  Role: Role;
   Sort: Sort;
   String: ResolverTypeWrapper<Scalars['String']['output']>;
 }>;
@@ -357,8 +353,6 @@ export type QueryResolvers<ContextType = GraphQLContext, ParentType extends Reso
   getPosts?: Resolver<ResolversTypes['Feed'], ParentType, ContextType, Partial<QueryGetPostsArgs>>;
 }>;
 
-export type RoleResolvers = EnumResolverSignature<{ ADMIN?: any, AUTHOR?: any }, ResolversTypes['Role']>;
-
 export type Resolvers<ContextType = GraphQLContext> = ResolversObject<{
   AuthPayload?: AuthPayloadResolvers<ContextType>;
   Author?: AuthorResolvers<ContextType>;
@@ -367,7 +361,6 @@ export type Resolvers<ContextType = GraphQLContext> = ResolversObject<{
   Mutation?: MutationResolvers<ContextType>;
   Post?: PostResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
-  Role?: RoleResolvers;
 }>;
 
 export type DirectiveResolvers<ContextType = GraphQLContext> = ResolversObject<{
