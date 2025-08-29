@@ -1,6 +1,7 @@
 import { hash, verify } from "@node-rs/argon2";
 import { createNewToken, omitFields } from "../utils.js";
 import { MutationResolvers } from "../../shared/types.js";
+import { Author } from "@prisma/client";
 
 export const mutations: MutationResolvers = {
   addPost: async (
@@ -48,7 +49,10 @@ export const mutations: MutationResolvers = {
           author_id: author_id ?? undefined,
           email: email ? email : undefined,
         },
-        omit: omitFields(author),
+        // select: {
+        //   author_id: true,
+        //   username: true,
+        // },
       })
       .catch((error: any) => {
         throw new Error(`Error deleting author: ${error.message}`);
@@ -124,9 +128,11 @@ export const mutations: MutationResolvers = {
   },
   signup: async (parent, args, { prisma }, info) => {
     const password = await hash(args.password);
-    const author = await prisma.author.create({
+    const prismaAuthor = await prisma.author.create({
       data: { ...args, password },
+      omit: { password: true },
     });
+    const author: Author = { ...prismaAuthor, password: "" };
     const token = await createNewToken(author);
 
     return {

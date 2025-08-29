@@ -7,9 +7,9 @@ export const queries: QueryResolvers = {
     { author_ids, emails, role, usernames },
     { prisma, author }
   ) => {
-    // if (author.role !== "ADMIN") {
-    //   throw new Error("Unauthorized");
-    // }
+    if (author.role !== "ADMIN") {
+      throw new Error("Unauthorized");
+    }
 
     const orConditions = [];
 
