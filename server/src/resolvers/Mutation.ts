@@ -48,10 +48,7 @@ export const mutations: MutationResolvers = {
           author_id: author_id ?? undefined,
           email: email ? email : undefined,
         },
-        // select: {
-        //   author_id: true,
-        //   username: true,
-        // },
+        omit: omitFields(author),
       })
       .catch((error: any) => {
         throw new Error(`Error deleting author: ${error.message}`);
@@ -129,7 +126,6 @@ export const mutations: MutationResolvers = {
     const password = await hash(args.password);
     const author = await prisma.author.create({
       data: { ...args, password },
-      // omit: { password: true },
     });
     const token = await createNewToken(author);
 

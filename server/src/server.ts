@@ -20,6 +20,11 @@ const __dirname = dirname(__filename);
 // Exposes CRUD API for data models
 const prisma = new PrismaClient({
   errorFormat: "minimal",
+  omit: {
+    author: {
+      password: true,
+    },
+  },
 });
 
 const server = new ApolloServer<GraphQLContext>({

@@ -44,7 +44,7 @@ export const getAuthor = async (req: IncomingMessage): Promise<Author> => {
       date_updated: new Date(),
       posts: [],
       username: "",
-      role: "GUEST"
+      role: "GUEST",
     };
   }
 };
@@ -62,10 +62,9 @@ const getTokenPayload = async (token: string) => {
 
 export const omitFields = (author: Author) => {
   return author.role === "ADMIN"
-    ? { password: true }
+    ? {}
     : {
         email: true,
-        password: true,
         first_name: true,
         last_name: true,
       };
