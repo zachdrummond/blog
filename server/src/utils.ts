@@ -68,6 +68,5 @@ export const omitFields = (author: Author) => {
         password: true,
         first_name: true,
         last_name: true,
-        role: true,
       };
 };
